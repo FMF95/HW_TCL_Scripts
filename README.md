@@ -13,3 +13,4 @@
 - 10 <ins><strong>script_set_rbe2_cte</strong></ins>: Script that sets the CTE of the displayed RBE2 elements.
 - 11 <ins><strong>script_set_rbe3_cte</strong></ins>: Script that sets the CTE of the displayed RBE3 elements.
 - 12 <ins><strong>script_rbe3_to_rbe2</strong></ins>: Script that converts the displayed RBE3 elements to RBE2 elements.
+- 13 <ins><strong>script_rbe2_to_rbe3</strong></ins>: Script that converts the displayed RBE2 elements to RBE3 elements. Weigth 1.0 and dofs 123 for independent nodes.
