@@ -14,3 +14,5 @@
 - 11 <ins><strong>script_set_rbe3_cte</strong></ins>: Script that sets the CTE of the displayed RBE3 elements.
 - 12 <ins><strong>script_rbe3_to_rbe2</strong></ins>: Script that converts the displayed RBE3 elements to RBE2 elements.
 - 13 <ins><strong>script_rbe2_to_rbe3</strong></ins>: Script that converts the displayed RBE2 elements to RBE3 elements. Weigth 1.0 and dofs 123 for independent nodes.
+- 14 <ins><strong>script_get_rivet_associated_props</strong></ins>: Script that search for the displayed rivets (CBUSH, CFAST, etc) and returns information about the "attached" elements and its materials and properties.
+- 15 <ins><strong>tool_orientate_rivet_head</strong></ins>: Tool to orient a joint by defining whether the distance of its GA node with respect to a reference node is greater or less than the distance of the node corresponding to the nut or thread, GB.
