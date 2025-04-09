@@ -76,6 +76,7 @@ proc ::OrientateJointGAGB::lunchGUI { {x -1} {y -1} } {
 	variable elecol $elefrm.elesel	
 	#$nodefrm.elesel invoke
 	pack $elecol -side top -anchor nw -padx 4 -pady 8
+	SetCursorHelp $elelbl " 1D Elements to orientate. "
 	
 	#-----------------------------------------------------------------------------------------------
     set nodefrm [hwtk::frame $guiRecess.nodefrm]
@@ -94,6 +95,7 @@ proc ::OrientateJointGAGB::lunchGUI { {x -1} {y -1} } {
 	set nodcol $nodefrm.nodesel	
 	#$nodefrm.nodesel invoke
 	pack $nodcol -side top -anchor nw -padx 4 -pady 8
+	SetCursorHelp $nodelbl " Reference node to determine which node of the fastener is the head and which the thread. "
 
 
  	#-----------------------------------------------------------------------------------------------
@@ -101,7 +103,7 @@ proc ::OrientateJointGAGB::lunchGUI { {x -1} {y -1} } {
 	pack $combofrm -anchor nw -side top
 	
     set gaposition_init ""
-    set gaposition_options {"Furthest node" "Closest node"}
+    set gaposition_options {"Furthest node" "Nearest node"}
 	set combolbl [hwtk::label $combofrm.combolbl -text "Joint head (node GA):"]
 	pack $combolbl -side left -anchor nw -padx 4 -pady 8
 	
@@ -113,7 +115,10 @@ proc ::OrientateJointGAGB::lunchGUI { {x -1} {y -1} } {
     set combobox $combofrm.combosel
 	#$combofrm.combosel invoke
 	pack $combobox -side top -anchor nw -padx 4 -pady 8
+	SetCursorHelp $combolbl " Identify whether the head node is the nearest or the farthest from the reference node. "
 
+
+ 	#-----------------------------------------------------------------------------------------------
 	.orientateJointGAGBGUI post
 }
 	
