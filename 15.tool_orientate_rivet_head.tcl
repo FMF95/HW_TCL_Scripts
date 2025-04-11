@@ -201,8 +201,8 @@ proc ::OrientateJointGAGB::comboSelector { args } {
 	
 	if {[lindex $args 0] == "Furthest node"} {
 	    set gaposition "Furthest node"
-		} elseif {[lindex $args 0] == "Closest node"} {
-		set gaposition "Closest node"
+		} elseif {[lindex $args 0] == "Nearest node"} {
+		set gaposition "Nearest node"
 		}
 }
 
@@ -268,8 +268,8 @@ proc ::OrientateJointGAGB::processBttn {} {
 			puts "switch further"
 			if {$distance_B > $distance_A} {::OrientateJointGAGB::reOrientate $element}
 		    }
-			"Closest node" {
-		    puts "switch closest"
+			"Nearest node" {
+		    puts "switch nearest"
 			if {$distance_A > $distance_B} {::OrientateJointGAGB::reOrientate $element}
 			}
 			default {
