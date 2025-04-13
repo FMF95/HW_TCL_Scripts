@@ -3,9 +3,7 @@ clear
 # Esta herramienta crea nodos a partir de un grupo de líneas (geometria).
 # Esta pensada para crear nodos en los centros de circunferencias de forma rapida.
 # Se requiere proporcionar las líneas.
-# Se puede especificar o no una tolerancia.
-# De momento solo esta soportada la opcion de lineas, puede que en un futuro se implementen nodos y puntos.
-# De momento solo se soporta la tolerancia como Ignore. En un futuro quizas tambien se implemente la opcion Set.
+# Se puede especificar o no una tolerancia. Por defecto utiliza la cleanup_tolerance definida en preferencias.
 
 # ##############################################################################
 # ##############################################################################
@@ -23,7 +21,10 @@ catch { namespace delete ::FastArcCenter }
 # Creacion de namespace de la aplicacion
 namespace eval ::FastArcCenter {
 	variable linelist []
-	variable gaposition  ""
+	variable toloption  "Ignore"
+    variable toloptions { "Ignore" "Set" } 
+	variable tolerance [hm_getoption cleanup_tolerance]
+	variable cleanup_tolerance [hm_getoption cleanup_tolerance]
 	
 }
 
@@ -78,10 +79,50 @@ proc ::FastArcCenter::lunchGUI { {x -1} {y -1} } {
 					
 				
 	variable lincol $linfrm.linsel	
-	#$nodefrm.elesel invoke
+	$linfrm.linsel invoke
 	pack $lincol -side top -anchor nw -padx 4 -pady 8
 	SetCursorHelp $linlbl " Select lines to create a center node. "
 
+
+	#-----------------------------------------------------------------------------------------------	
+	set optfrm [hwtk::frame $guiRecess.optfrm]
+	pack $optfrm -anchor nw -side top
+	
+	set optlbl [hwtk::label $optfrm.optlbl -text "Cleanup tolerance:" -width 20]
+	pack $optlbl -side left -anchor nw -padx 4 -pady 8
+	
+    set optsel [ hwtk::combobox $optfrm.optsel -state readonly \
+	                    -textvariable ::FastArcCenter::toloption \
+						-values ::FastArcCenter::toloption \
+						-selcommand "::FastArcCenter::comboSelector %v" ];
+					
+				
+	variable optcol $optfrm.optsel	
+	#$optfrm.optsel invoke
+	pack $optcol -side top -anchor nw -padx 4 -pady 8
+	SetCursorHelp $optlbl " Define a cleanup tolerance for the node creation. "
+
+ 	#-----------------------------------------------------------------------------------------------
+	variable tolfrm
+	set tolfrm [hwtk::frame $guiRecess.tolfrm]
+    #pack $tolfrm -anchor nw -side top
+	
+    set tollbl [label $tolfrm.tollbl -text "Tolerance:" ];   
+	pack $tollbl -side left -anchor nw -padx 4 -pady 8
+	
+    set tolent [ hwt::AddEntry $tolfrm.tolent \
+        -labelWidth  0 \
+		-validate real \
+		-entryWidth 16 \
+		-justify right \
+		-textvariable [namespace current]::tolerance];
+
+	variable tolcol $tolfrm.tolent	
+	#$tolfrm.tolent invoke
+	#pack $tolcol -side top -anchor nw -padx 150 -pady 8
+	SetCursorHelp $tollbl " Node creation cleanup tolerance value. "
+	SetCursorHelp $tolent " Node creation cleanup tolerance value. "
+	
 
  	#-----------------------------------------------------------------------------------------------
 	.fastArcCenterGUI post
@@ -139,6 +180,27 @@ proc ::FastArcCenter::processBttn {} {
 	#-----------------------------------------------------------------------------------------------
 
 }
+
+
+# ##############################################################################
+# Procedimiento para la seleccion del combobox
+proc ::FastArcCenter::comboSelector { args } { 
+
+	variable toloption
+	variable tolfrm
+	variable tolcol
+	
+	if {[lindex $args 0] == "Ignore"} {
+	    set toloption "Ignore"
+		pack forget $tolfrm
+		pack forget $tolcol
+		} elseif {[lindex $args 0] == "Set"} {
+		set toloption "Set"
+		pack $tolfrm -anchor nw -side top
+		pack $tolcol -side top -anchor nw -padx 150 -pady 8
+		}
+}
+
 	
 # ##############################################################################
 # procedimiento para cerrar la interfaz grafica
@@ -156,13 +218,19 @@ proc ::FastArcCenter::closeGUI {} {
     }
 }
 
+
 # ##############################################################################
 # Procedimiento de calculo
 proc ::FastArcCenter::createNodes { linelist } {
+    variable toloption
+	variable tolerance
+	variable cleanup_tolerance
     
     foreach line $linelist {
 	    eval *createmark lines 1 $line
+		if {$toloption == "Set"} {*cleanuptoleranceset $tolerance}
         *createbestcirclecenternode lines 1 0 1 0
+		if {$toloption == "Set"} {*cleanuptoleranceset $cleanup_tolerance}
 		*clearmark lines 1
 	}
 	
