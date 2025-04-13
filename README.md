@@ -17,3 +17,4 @@
 - 14 <ins><strong>script_get_rivet_associated_props</strong></ins>: Script that search for the displayed rivets (CBUSH, CFAST, etc) and returns information about the "attached" elements and its materials and properties.
 - 15 <ins><strong>tool_orientate_rivet_head</strong></ins>: Tool to orientate a joint by defining whether the distance of its GA node with respect to a reference node is greater or less than the distance of the node corresponding to the nut or thread, GB.
 - 16 <ins><strong>tool_fast_arc_center</strong></ins>: This tool is similar to Arc Center, but it allows to create nodes from a list of geometric entities.
+- 17 <ins><strong>tool_affine_transformation</strong></ins>: This tool performs an affine transformation from three reference nodes to three other nodes.
