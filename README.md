@@ -18,3 +18,4 @@
 - 15 <ins><strong>tool_orientate_rivet_head</strong></ins>: Tool to orientate a joint by defining whether the distance of its GA node with respect to a reference node is greater or less than the distance of the node corresponding to the nut or thread, GB.
 - 16 <ins><strong>tool_fast_arc_center</strong></ins>: This tool is similar to Arc Center, but it allows to create nodes from a list of geometric entities.
 - 17 <ins><strong>tool_affine_transformation</strong></ins>: This tool performs an affine transformation from three reference nodes to three other nodes.
+- 18 <ins><strong>tool_fast_coupling</strong></ins>: This tool generates RBE2 or RBE3 constraints from a list of nodes.
