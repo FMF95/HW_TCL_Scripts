@@ -101,7 +101,7 @@ proc ::FastCoupling::lunchGUI { {x -1} {y -1} } {
 	variable entcol $entfrm.entsel	
 	#$entfrm.entsel invoke
 	pack $entcol -side top -anchor nw -padx 4 -pady 8
-	SetCursorHelp $entlbl " Define nodes to be the coupling reference nodes. "
+	SetCursorHelp $entlbl " Define entities which nodes could be the coupling nodes. "
 
 
  	#-----------------------------------------------------------------------------------------------
