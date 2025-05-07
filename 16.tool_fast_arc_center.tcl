@@ -91,9 +91,12 @@ proc ::FastArcCenter::lunchGUI { {x -1} {y -1} } {
 	set optlbl [hwtk::label $optfrm.optlbl -text "Cleanup tolerance:" -width 20]
 	pack $optlbl -side left -anchor nw -padx 4 -pady 8
 	
+	variable toloption
+	variable toloptions
+	
     set optsel [ hwtk::combobox $optfrm.optsel -state readonly \
-	                    -textvariable ::FastArcCenter::toloption \
-						-values ::FastArcCenter::toloption \
+	                    -textvariable $toloption \
+						-values $toloptions \
 						-selcommand "::FastArcCenter::comboSelector %v" ];
 					
 				
