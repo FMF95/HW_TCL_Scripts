@@ -755,7 +755,7 @@ proc ::GeomEntitySelector::processBttn {} {
 }
 	
 # ##############################################################################
-# procedimiento para cerrar la interfaz grafica
+# Procedimiento para cerrar la interfaz grafica
 proc ::GeomEntitySelector::closeGUI {} {
     variable guiVar
     catch {destroy .geomEntitySelectorGUI}
@@ -772,7 +772,7 @@ proc ::GeomEntitySelector::closeGUI {} {
 
 
 # ##############################################################################
-# procedimiento para limpiar las variables
+# Procedimiento para limpiar las variables
 proc ::GeomEntitySelector::clearVar {} {
 	variable refnode []
     variable axis []
@@ -786,7 +786,7 @@ proc ::GeomEntitySelector::clearVar {} {
 
 
 # ##############################################################################
-# procedimiento para limpiar las variables
+# Procedimiento para recuperar la lista de todos los sets
 proc ::GeomEntitySelector::getAllSets {} {
     *clearmarkall 1
     *clearmarkall 2
