@@ -49,9 +49,19 @@ proc ::OrientateJointGAGB::lunchGUI { {x -1} {y -1} } {
 				-minheight 120 \
 				-x $x -y $y \
 				-title "Orientate Joint GA & GB" 
+
+	.orientateJointGAGBGUI insert apply Review
+	.orientateJointGAGBGUI buttonconfigure Review \
+						-command "::OrientateJointGAGB::reviewGA" \
+						-state normal
+	.orientateJointGAGBGUI insert apply Clear
+	.orientateJointGAGBGUI buttonconfigure Clear \
+						-command "::OrientateJointGAGB::clearMarkGA" \
+						-state normal
 	.orientateJointGAGBGUI buttonconfigure apply -command ::OrientateJointGAGB::processBttn
 	.orientateJointGAGBGUI buttonconfigure cancel -command ::OrientateJointGAGB::closeGUI	
     .orientateJointGAGBGUI hide ok
+
 
 	set guiRecess [ .orientateJointGAGBGUI recess]
 	
@@ -235,7 +245,7 @@ proc ::OrientateJointGAGB::processBttn {} {
 	set refnode_y [hm_getvalue node id=$refnode dataname=y]
 	set refnode_z [hm_getvalue node id=$refnode dataname=z]
 	
-	# se crea una marca con los elementos 1D con las confuguraciones usadas para las uniones
+	# se crea una marca con los elementos 1D con las configuraciones usadas para las uniones
 	eval *createmark elements 1 $elemslist
 	hm_createmark elems 2 "by config" "60 61 21"
 	*markintersection elems 1 elem 2
@@ -319,6 +329,57 @@ proc ::OrientateJointGAGB::reOrientate { element } {
 	*setvalue elems id=$element node1=$nodeB
     *setvalue elems id=$element node2=$nodeA
 }
+
+
+# ##############################################################################
+# Procedimiento que marca los GA
+proc ::OrientateJointGAGB::reviewGA { } {
+	variable elemslist
+    variable refnode
+	
+    if {[llength $elemslist] == 0} {
+		tk_messageBox -title "Orientate Joint GA & GB" -message "No elements were selected. \nPlease select at least 1 element." -parent .orientateJointGAGBGUI
+        return
+	}
+	
+ 	#-----------------------------------------------------------------------------------------------
+	# se crea una marca con los elementos 1D con las configuraciones usadas para las uniones
+	eval *createmark elements 1 $elemslist
+	hm_createmark elems 2 "by config" "60 61 21"
+	*markintersection elems 1 elem 2
+	set jointelems [hm_getmark elems 1]
+	*clearmark elems 1
+	*clearmark elems 2
+	
+	set listGA []
+	
+    # Se buscan los nodos GA
+	foreach element $jointelems {    
+        set nodeA [hm_getvalue elements id=$element dataname=node1]
+		lappend listGA $nodeA
+	}
+		
+	# Se crean marcas y se resaltan los nodos	
+	eval *createmark nodes 1 $listGA
+	hm_highlightmark nodes 1 "high"
+	
+    if {[llength $refnode] != 0} { 
+	    eval *createmark nodes 2 $refnode
+	    hm_highlightmark nodes 2 "low"
+	}
+
+	return
+}
+
+
+# ##############################################################################
+# Procedimiento para limpiar la marca
+proc ::OrientateJointGAGB::clearMarkGA { } {
+    *clearmark nodes 1
+	*clearmark nodes 2
+     return
+}
+
 
 # ##############################################################################
 # Procedimento para mostrar la ventana emergente
