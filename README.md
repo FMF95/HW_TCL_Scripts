@@ -7,7 +7,7 @@
 - 4 <ins><strong>script_offset_with_reference_surfs</strong></ins>: Script that sets the shell element ofset (ZOFFS) so that one of the elemnts faces lays on a geometrical reference surface.
 - 5 <ins><strong>script_get_CFAST_SHID</strong></ins>: Script that returns the SHIDA and SHIDB from a CFAST element.
 - 6 <ins><strong>script_id_FE_from_conector</strong></ins>: Script that returns the FE IDs associated to a connector.
-- 7 <ins><strong>script_get_CBUSH_associated_props</strong></ins>: Script that gives information of a CBUSH element as well as information of the adjacent elements of the joint.
+- 7 <ins><strong>7.script_temo_loadcol_nodes_check</strong></ins>: Script that checks the nodes that does not have a load applied from a loadcol.
 - 8 <ins><strong>proc_get_disp_elems_byconfig</strong></ins>: A procedure that returns the displayed elements of one or more configurations. A procedure that returns the elements other than certain configurations.
 - 9 <ins><strong>script_material_orientation_check</strong></ins>: Script that checks that all elements from composite properties have a material orientation.
 - 10 <ins><strong>script_set_rbe2_cte</strong></ins>: Script that sets the CTE of the displayed RBE2 elements.
