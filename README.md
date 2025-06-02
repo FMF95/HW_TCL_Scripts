@@ -22,3 +22,4 @@
 - 19 <ins><strong>script_matrixbrowser_contour</strong></ins>: This script allows you to add columns to the matrixbrwoser in order to make a contour. 
 - 20 <ins><strong>tool_geometric_entity_selector</strong></ins>: This tool creates a selection of entities, nodes, elements, etc, that meet a given geometrical condition.
 - 21 <ins><strong>proc_retrieve_set_list</strong></ins>: Procedure for retrieving the list of all sets.
+- 22 <ins><strong>tool_delete_loads_by_entities</strong></ins>: Tool that deletes loads applied to entities for load collectors.
