@@ -109,10 +109,12 @@ proc ::DeleteLoadEntity::lunchGUI { {x -1} {y -1} } {
 
  	#-----------------------------------------------------------------------------------------------
 	set outfrm [hwtk::labelframe  $guiRecess.outfrm -text " Output " -padding 4]
-    pack $outfrm -side bottom -fill x;
+    pack $outfrm -fill x -pady 4;
 	
 	set text [hwtk::text $outfrm.text -height 10 ]
 	pack $text -side left -anchor nw -padx 4 -pady 10
+	
+	::ProgressBar::CreateDeterminatePB $guiRecess "pb"	
 	
  	#-----------------------------------------------------------------------------------------------
 	.deleteLoadEntityGUI post
@@ -211,6 +213,7 @@ proc ::DeleteLoadEntity::loadcolSelector { args } {
 proc ::DeleteLoadEntity::processBttn {} { 
 	variable loadcollist
 	variable entityoptions
+	variable entityoption
 	variable entitytype
 	variable entitylist
 	
@@ -230,7 +233,10 @@ proc ::DeleteLoadEntity::processBttn {} {
 
     # Se lanza el proceso de borrado de las cargas
     ::DeleteLoadEntity::deleteLoads $entitytype $entitylist $loadcollist
-
+	
+    # Se limpian las variables
+    ::DeleteLoadEntity::clearVars
+	
     # Se muestra un mensaje al acabar de evaluar los elementos
 	#::DeleteLoadEntity::completemsg "Job done."
     
@@ -259,31 +265,49 @@ proc ::DeleteLoadEntity::closeGUI {} {
 
 # ##############################################################################
 # Procedimiento de calculo
-proc ::DeleteLoadEntity::deleteLoads { entitytype entitylist loadcollist } {
+proc ::DeleteLoadEntity::clearVars { } {
+    variable loadcollist []
+	variable entitylist []
+}
 
-    ::DeleteLoadEntity::puts " Entityies selected: [llength $entitylist] ($entitytype) "
-	::DeleteLoadEntity::puts " Load collectors: [llength $loadcollist]"
+
+# ##############################################################################
+# Procedimiento de calculo
+proc ::DeleteLoadEntity::deleteLoads { entitytype entitylist loadcollist } {
+    variable guiRecess
+
+    ::ProgressBar::BarCommand start $guiRecess.pb
+	
+    ::DeleteLoadEntity::puts " Entities selected: [llength $entitylist] ($entitytype) "
+	::DeleteLoadEntity::puts " Load collectors selected: [llength $loadcollist]"
 	
     set loadslist ""
 	
 	foreach loadcol $loadcollist {
-	  set lcname [hm_getvalue loadcol id=$loadcol dataname=name]
-	  ::DeleteLoadEntity::puts "  $lcname (id: $loadcol) "
+	    set lcname [hm_getvalue loadcol id=$loadcol dataname=name]
+	    ::DeleteLoadEntity::puts "  $lcname (id: $loadcol) "
 	  
-	  *createmark loads 1 "by collector id" $loadcol
-	  set collectorloads [hm_getmark loads 1]
-	  append loadslist " " $collectorloads
+	    *createmark loads 1 "by collector id" $loadcol
+	    set collectorloads [hm_getmark loads 1]
+	    append loadslist " " $collectorloads
+	  
 	}
 	*clearmark loads 1
+	
+	set allsteps [expr [llength $loadslist] + 1 ]
 	
     ::DeleteLoadEntity::puts " "
 	::DeleteLoadEntity::puts " running... "
 	::DeleteLoadEntity::puts " "
 
 	set loadsdelete ""
+	
 	foreach load $loadslist {
 		set entity [hm_getvalue loads id=$load dataname=entityid]
         if { [lsearch $entitylist $entity] >= 0 } { lappend loadsdelete $load }
+		
+		::ProgressBar::Increment $guiRecess.pb $allsteps
+		update
 	}
 
 	set len [llength $loadsdelete]
@@ -294,6 +318,9 @@ proc ::DeleteLoadEntity::deleteLoads { entitytype entitylist loadcollist } {
 	} else {
 	    ::DeleteLoadEntity::puts " No loads found to delete. "
 	}
+	
+	#::ProgressBar::ForgetPB $guiRecess.pb
+	::ProgressBar::BarCommand stop $guiRecess.pb
 
 	::DeleteLoadEntity::puts " Finished.\n "
 
@@ -330,6 +357,62 @@ proc ::DeleteLoadEntity::completemsg {message} {
     # Hacer que HyperMesh emita un beep
     bell
 	
+}
+
+
+# ##############################################################################
+# ##############################################################################
+if {[namespace exists ::ProgressBar]} {
+    if {[winfo exists .progressBarGUI]} {
+        #tk_messageBox -icon warning -title "HyperMesh" -message "Progress Bar GUI already exists! Please close the existing GUI to open a new one."
+		::ProgressBar::closeGUI
+		#return;
+    }
+}
+
+catch { namespace delete ::ProgressBar }
+
+# Creacion de namespace de la aplicacion
+namespace eval ::ProgressBar {
+	
+}
+
+# Procedimiento para crear una barra de progreso determinada
+proc ::ProgressBar::CreateDeterminatePB { gui bar } {
+	set pbd [hwtk::progressbar $gui.$bar -mode determinate]
+    ::ProgressBar::PackPB $pbd
+}
+
+
+# ##############################################################################
+# Procedimiento para empezar o parar la barra de progreso
+proc ::ProgressBar::BarCommand {op args} {
+    foreach w $args {
+	    $w $op
+    }
+}
+
+
+# ##############################################################################
+# Procedimiento para aplicar un incremento de a la barra de progreso (determinada)
+proc ::ProgressBar::Increment { pb length } {
+    $pb configure -value [expr { [$pb cget -value] + [expr {1.0 / $length} ]*100 } ]
+}
+
+
+# ##############################################################################
+# Procedimiento para mostrar la barra de progreso
+proc ::ProgressBar::PackPB { arg } {
+    ::hwt::AddPadding $arg -height 1
+    pack $arg -side bottom -fill x
+	::hwt::AddPadding $arg -height 1
+}
+
+
+# ##############################################################################
+# Procedimiento para ocultar la barra de progreso
+proc ::ProgressBar::ForgetPB { arg } {
+    pack forget $arg
 }
 
 # ##############################################################################
