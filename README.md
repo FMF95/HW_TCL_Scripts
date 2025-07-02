@@ -25,3 +25,4 @@
 - 22 <ins><strong>tool_delete_loads_by_entities</strong></ins>: Tool that deletes loads applied to entities for load collectors.
 - 23 <ins><strong>proc_replace_node</strong></ins>: Proc that moves one grid to other grid position.
 - 24 <ins><strong>proc_nodes_outputsystem</strong></ins>: Proc that establishes an outputsyst for a selection of nodes.
+- 25 <ins><strong>tool_renumber_by_component</strong></ins>: Tool that renumbers nodes, elements, properties, etc, within a component from its id.
