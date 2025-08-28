@@ -27,5 +27,6 @@
 - 24 <ins><strong>proc_nodes_outputsystem</strong></ins>: Proc that establishes an outputsyst for a selection of nodes.
 - 25 <ins><strong>tool_renumber_by_component</strong></ins>: Tool that renumbers nodes, elements, properties, etc, within a component from its id.
 - 26 <ins><strong>proc_rbe3_to_element</strong></ins>: Process that generates an RBE3 from a node and an element. The selected node being the dependent node and the element nodes being the independent nodes.
-- 27 <ins><strong>tool_get_RBE_nodes</strong></ins>:Tool that searches for dependent or independent nodes of RBE type elements.
-- 28 <ins><strong>tool_1D_free_nodes</strong></ins>:Tool that marks the disconnected nodes of the 1D elements.
+- 27 <ins><strong>tool_get_RBE_nodes</strong></ins>: Tool that searches for dependent or independent nodes of RBE type elements.
+- 28 <ins><strong>tool_1D_free_nodes</strong></ins>: Tool that marks the disconnected nodes of the 1D elements.
+- 29 <ins><strong>Improved_boolSet</strong></ins>:Improvement of the boolSet tool.
