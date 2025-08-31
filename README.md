@@ -29,4 +29,5 @@
 - 26 <ins><strong>proc_rbe3_to_element</strong></ins>: Process that generates an RBE3 from a node and an element. The selected node being the dependent node and the element nodes being the independent nodes.
 - 27 <ins><strong>tool_get_RBE_nodes</strong></ins>: Tool that searches for dependent or independent nodes of RBE type elements.
 - 28 <ins><strong>tool_1D_free_nodes</strong></ins>: Tool that marks the disconnected nodes of the 1D elements.
-- 29 <ins><strong>Improved_boolSet</strong></ins>:Improvement of the boolSet tool.
+- 29 <ins><strong>Improved_boolSet</strong></ins>: Improvement of the boolSet tool.
+- 30 <ins><strong>tool_loads_summary</strong></ins>: Tool that improves the workflow of Loads Summary calculation.
