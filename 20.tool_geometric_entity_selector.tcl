@@ -380,7 +380,7 @@ proc ::GeomEntitySelector::lunchGUI { {x -1} {y -1} } {
 	variable outopt
 	variable outbtn_1
 	
-	set outbtn_1 [hwtk::checkbutton $outfrm_1.outbtn_1 -text "Create $entityoption set" \
+	set outbtn_1 [hwtk::checkbutton $outfrm_1.outbtn_1 -text "Create set" \
 	    -variable $outopt \
 		-onvalue 0 \
 		-offvalue 1 \
@@ -392,8 +392,8 @@ proc ::GeomEntitySelector::lunchGUI { {x -1} {y -1} } {
 	set outcol_1 $outfrm_1.outbtn_1
 	#$outfrm_1.outsel_1 invoke
 	pack $outcol_1 -side top -anchor nw -padx 4 -pady 8
-	SetCursorHelp $outlbl_1 " To create a $entityoption set with selected entities. "
-    SetCursorHelp $outbtn_1 " To create a $entityoption set with selected entities. "
+	SetCursorHelp $outlbl_1 " To create a set with selected entities. "
+    SetCursorHelp $outbtn_1 " To create a set with selected entities. "
 
 
  	#-----------------------------------------------------------------------------------------------
