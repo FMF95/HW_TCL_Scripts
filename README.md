@@ -7,7 +7,7 @@
 - 4 <ins><strong>script_offset_with_reference_surfs</strong></ins>: Script that sets the shell element ofset (ZOFFS) so that one of the elemnts faces lays on a geometrical reference surface.
 - 5 <ins><strong>script_get_CFAST_SHID</strong></ins>: Script that returns the SHIDA and SHIDB from a CFAST element.
 - 6 <ins><strong>script_id_FE_from_conector</strong></ins>: Script that returns the FE IDs associated to a connector.
-- 7 <ins><strong>script_temo_loadcol_nodes_check</strong></ins>: Script that checks the nodes that does not have a load applied from a loadcol.
+- 7 <ins><strong>script_temp_loadcol_nodes_check</strong></ins>: Script that checks the nodes that does not have a load applied from a loadcol.
 - 8 <ins><strong>proc_get_disp_elems_byconfig</strong></ins>: A procedure that returns the displayed elements of one or more configurations. A procedure that returns the elements other than certain configurations.
 - 9 <ins><strong>script_material_orientation_check</strong></ins>: Script that checks that all elements from composite properties have a material orientation.
 - 10 <ins><strong>script_set_rbe2_cte</strong></ins>: Script that sets the CTE of the displayed RBE2 elements.
@@ -31,3 +31,4 @@
 - 28 <ins><strong>tool_1D_free_nodes</strong></ins>: Tool that marks the disconnected nodes of the 1D elements.
 - 29 <ins><strong>Improved_boolSet</strong></ins>: Improvement of the boolSet tool.
 - 30 <ins><strong>tool_loads_summary</strong></ins>: Tool that improves the workflow of Loads Summary calculation.
+- 31 <ins><strong>tool_patch_mesh</strong></ins>: Tool that generates a surface to be meshed from the nodes of an existing mesh and a base surface for the new mesh.
