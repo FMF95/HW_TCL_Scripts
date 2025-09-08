@@ -273,7 +273,7 @@ proc ::RenumberByComp::clearVars { } {
 
 # ##############################################################################
 # Procedimiento de renumeracion
-proc ::RenumberByComp::renumber { complist entitylist increment} {
+proc ::RenumberByComp::renumber { complist entitylist increment } {
     variable guiRecess
 	
 	set allsteps [expr [llength $complist] + 1 ]
@@ -286,9 +286,13 @@ proc ::RenumberByComp::renumber { complist entitylist increment} {
             # Retrieve entities from compid
             *createmark $entitytype 1 "by comp id" $compid
 			set marklength [hm_marklength $entitytype 1]
-			
+
 			if { $marklength == 0 } {
-			    puts "   ✗ No $entitytype found to renumber"
+			    if { $entitytype == "properties" } {
+				    ::RenumberByComp::renumberByElements $compid $entitytype $increment
+				} else {
+			        puts "   ✗ No $entitytype found to renumber"
+				}
 			} else {
                 # Renumber entities
                 *renumbersolverid $entitytype 1 $compid $increment 0 0 0 0 0
@@ -309,7 +313,38 @@ proc ::RenumberByComp::renumber { complist entitylist increment} {
 	bell
 	
 }
+
+
+# ##############################################################################
+# Procedimiento de renumeracion de propiedades por elementos.
+proc ::RenumberByComp::renumberByElements { compid entitytype increment } {
+
+    *createmark elems 1 "by comp id" $compid
+	set elemlist [hm_getmark elems 1]
+	*clearmark elems 1
 	
+	set entitylist []
+	
+	foreach element $elemlist {
+
+		set entityid [hm_getvalue elems id=$element dataname="propertyid"]
+		
+		if {[lsearch -exact $entitylist $entityid] < 0} {
+            lappend entitylist $entityid
+        }
+	}
+
+	foreach entityid $entitylist {
+		*createmark $entitytype 1 "by id" $entityid
+	    *renumbersolverid $entitytype 1 $compid $increment 0 0 0 0 0
+		*clearmark $entitytype 1
+        puts "   ✓ $entitytype renumbered"
+	}
+    
+	return
+
+}
+
 
 # ##############################################################################
 # Procedimento para mostrar la ventana emergente
