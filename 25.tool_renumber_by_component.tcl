@@ -267,15 +267,16 @@ proc ::RenumberByComp::closeGUI {} {
 # Procedimiento de borrado de variables
 proc ::RenumberByComp::clearVars { } {
 	variable complist []
-	variable entitylist []
+	#variable entitylist []
 }
 
 
 # ##############################################################################
 # Procedimiento de renumeracion
 proc ::RenumberByComp::renumber { complist entitylist increment } {
-    variable guiRecess
-	
+    
+	variable guiRecess
+
 	set allsteps [expr [llength $complist] + 1 ]
 	::ProgressBar::BarCommand start $guiRecess.pb
 	::RenumberByComp::puts " Start renumbering: "
@@ -294,13 +295,14 @@ proc ::RenumberByComp::renumber { complist entitylist increment } {
 			        puts "   ✗ No $entitytype found to renumber"
 				}
 			} else {
+
                 # Renumber entities
                 *renumbersolverid $entitytype 1 $compid $increment 0 0 0 0 0
                 puts "   ✓ $entitytype renumbered"
                 *clearmark $entitytype 1
 			}
 		}
-		
+
 		::ProgressBar::Increment $guiRecess.pb $allsteps
 		update
 
@@ -326,21 +328,24 @@ proc ::RenumberByComp::renumberByElements { compid entitytype increment } {
 	set entitylist []
 	
 	foreach element $elemlist {
-
 		set entityid [hm_getvalue elems id=$element dataname="propertyid"]
-		
-		if {[lsearch -exact $entitylist $entityid] < 0} {
+
+		if { ([lsearch -exact $entitylist $entityid] < 0) && ($entityid != 0) } {
             lappend entitylist $entityid
         }
 	}
 
-	foreach entityid $entitylist {
-		*createmark $entitytype 1 "by id" $entityid
-	    *renumbersolverid $entitytype 1 $compid $increment 0 0 0 0 0
-		*clearmark $entitytype 1
-        puts "   ✓ $entitytype renumbered"
+	if { [llength $entitylist] > 0 } {
+	    foreach entityid $entitylist {
+		    *createmark $entitytype 1 "by id" $entityid
+	        *renumbersolverid $entitytype 1 $compid $increment 0 0 0 0 0
+		    *clearmark $entitytype 1
+		    puts "   ✓ $entitytype renumbered"
+	    }
+	} else {
+	    puts "   ✗ No $entitytype found to renumber"
 	}
-    
+	
 	return
 
 }
