@@ -32,3 +32,4 @@
 - 29 <ins><strong>Improved_boolSet</strong></ins>: Improvement of the boolSet tool.
 - 30 <ins><strong>tool_loads_summary</strong></ins>: Tool that improves the workflow of Loads Summary calculation.
 - 31 <ins><strong>tool_patch_mesh</strong></ins>: Tool that generates a surface to be meshed from the nodes of an existing mesh and a base surface for the new mesh.
+- 32 <ins><strong>tool_fast_zoffs</strong></ins>: Tool that allows you to adjust the offsets of different properties of a 2D mesh that share the same surface.
