@@ -60,7 +60,12 @@ proc ::GeomEntitySelector::lunchGUI { {x -1} {y -1} } {
 				-minwidth 350 \
 				-minheight 120 \
 				-x $x -y $y \
-				-title "Geometric Entity Selector" 
+				-title "Geometric Entity Selector"
+				
+	.geomEntitySelectorGUI insert apply Save_Mark
+	.geomEntitySelectorGUI buttonconfigure Save_Mark \
+						-command "::GeomEntitySelector::saveMark" \
+						-state normal
 	.geomEntitySelectorGUI buttonconfigure apply -command ::GeomEntitySelector::processBttn
 	.geomEntitySelectorGUI buttonconfigure cancel -command ::GeomEntitySelector::closeGUI	
     .geomEntitySelectorGUI hide ok
@@ -178,8 +183,71 @@ proc ::GeomEntitySelector::lunchGUI { {x -1} {y -1} } {
 	
 
 	#::hwt::AddPadding $tolfrm -height $sep;
+	
+
+ 	#-----------------------------------------------------------------------------------------------
+ 	#-----------------------------------------------------------------------------------------------
+	# Frame para los outputs
+	variable lfout
+	set lfout [hwtk::labelframe  $guiRecess.lfout -text " Output options " -padding 4]
+    pack $lfout -side top -fill x;
+	
+	#::hwt::AddPadding $guiRecess -height $sep;
+	
+ 	#-----------------------------------------------------------------------------------------------
+    set outfrm_1 [hwtk::frame $lfout.outfrm_1]
+	pack $outfrm_1 -anchor nw -side top
+	
+	set outlbl_1 [hwtk::label $outfrm_1.outlbl_1 -text "Create set with entities:" -width 20]
+	pack $outlbl_1 -side left -anchor nw -pady 8
+
+
+    variable entityoption
+	variable outopt
+	variable outbtn_1
+	
+	set outbtn_1 [hwtk::checkbutton $outfrm_1.outbtn_1 -text "Create $entityoption set" \
+	    -variable $outopt \
+		-onvalue 0 \
+		-offvalue 1 \
+		-command "::GeomEntitySelector::outputBttn"];
 		
-		
+	#set flags [$outfrm_1.outbtn_1 instate {selected}]
+    #puts $flags
+				
+	set outcol_1 $outfrm_1.outbtn_1
+	#$outfrm_1.outsel_1 invoke
+	pack $outcol_1 -side top -anchor nw -padx 4 -pady 8
+	SetCursorHelp $outlbl_1 " To create a $entityoption set with selected entities. "
+    SetCursorHelp $outbtn_1 " To create a $entityoption set with selected entities. "
+
+
+ 	#-----------------------------------------------------------------------------------------------
+	variable outfrm_2 
+	set outfrm_2 [hwtk::frame $lfout.outfrm_2]
+    #pack $outfrm_2 -anchor nw -side top
+	
+    set outlbl_2 [label $outfrm_2.outlbl_2 -text "Set name:" ];   
+	pack $outlbl_2 -side left -anchor nw -padx 4 -pady 8
+	
+    set outent_2 [ hwt::AddEntry $outfrm_2.outent_2 \
+        -labelWidth  0 \
+		-validate alphanumeric \
+		-entryWidth 16 \
+		-justify right \
+		-textvariable [namespace current]::setname];
+
+	variable outcol_2 $outfrm_2.outent_2	
+	#$outfrm_2.outent_2 invoke
+    #pack $outfrm_2 -anchor nw -side top
+	pack $outcol_2 -side top -anchor nw -padx 150 -pady 8
+	SetCursorHelp $outlbl_2 " Enter a name for the $entityoption set. "
+	SetCursorHelp $outent_2 " Enter a name for the $entityoption set. "
+
+	
+	#::hwt::AddPadding $tolfrm -height $sep;
+
+	
  	#-----------------------------------------------------------------------------------------------
  	#-----------------------------------------------------------------------------------------------
 	# Frame de los inputs para el plano
@@ -357,69 +425,6 @@ proc ::GeomEntitySelector::lunchGUI { {x -1} {y -1} } {
 
 	
     #::hwt::AddPadding $lfcyl -height $sep;
-		
-		
- 	#-----------------------------------------------------------------------------------------------
- 	#-----------------------------------------------------------------------------------------------
-	# Frame para los outputs
-	variable lfout
-	set lfout [hwtk::labelframe  $guiRecess.lfout -text " Output options " -padding 4]
-    pack $lfout -side top -fill x;
-	
-	#::hwt::AddPadding $guiRecess -height $sep;
-	
- 	#-----------------------------------------------------------------------------------------------
-    set outfrm_1 [hwtk::frame $lfout.outfrm_1]
-	pack $outfrm_1 -anchor nw -side top
-	
-	set outlbl_1 [hwtk::label $outfrm_1.outlbl_1 -text "Create set with entities:" -width 20]
-	pack $outlbl_1 -side left -anchor nw -pady 8
-
-
-    variable entityoption
-	variable outopt
-	variable outbtn_1
-	
-	set outbtn_1 [hwtk::checkbutton $outfrm_1.outbtn_1 -text "Create set" \
-	    -variable $outopt \
-		-onvalue 0 \
-		-offvalue 1 \
-		-command "::GeomEntitySelector::outputBttn"];
-		
-	#set flags [$outfrm_1.outbtn_1 instate {selected}]
-    #puts $flags
-				
-	set outcol_1 $outfrm_1.outbtn_1
-	#$outfrm_1.outsel_1 invoke
-	pack $outcol_1 -side top -anchor nw -padx 4 -pady 8
-	SetCursorHelp $outlbl_1 " To create a set with selected entities. "
-    SetCursorHelp $outbtn_1 " To create a set with selected entities. "
-
-
- 	#-----------------------------------------------------------------------------------------------
-	variable outfrm_2 
-	set outfrm_2 [hwtk::frame $lfout.outfrm_2]
-    #pack $outfrm_2 -anchor nw -side top
-	
-    set outlbl_2 [label $outfrm_2.outlbl_2 -text "Set name:" ];   
-	pack $outlbl_2 -side left -anchor nw -padx 4 -pady 8
-	
-    set outent_2 [ hwt::AddEntry $outfrm_2.outent_2 \
-        -labelWidth  0 \
-		-validate alphanumeric \
-		-entryWidth 16 \
-		-justify right \
-		-textvariable [namespace current]::setname];
-
-	variable outcol_2 $outfrm_2.outent_2	
-	#$outfrm_2.outent_2 invoke
-    #pack $outfrm_2 -anchor nw -side top
-	pack $outcol_2 -side top -anchor nw -padx 150 -pady 8
-	SetCursorHelp $outlbl_2 " Enter a name for the $entityoption set. "
-	SetCursorHelp $outent_2 " Enter a name for the $entityoption set. "
-	
-
-    #::hwt::AddPadding $outfrm_2 -height $sep;
 
 	
  	#-----------------------------------------------------------------------------------------------	
@@ -813,6 +818,14 @@ proc ::GeomEntitySelector::compareValue {value operator tolerance} {
             return
         }
     }
+}
+
+
+# ##############################################################################
+# Procedimiento para salvar la marca
+proc ::GeomEntitySelector::saveMark { } {
+    variable entityoption
+    hm_saveusermark $entityoption 1
 }
 
 
