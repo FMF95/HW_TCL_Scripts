@@ -13,7 +13,6 @@ clear
 if {[namespace exists ::GetRBENodes]} {
     if {[winfo exists .getRBENodesGUI]} {
         tk_messageBox -icon warning -title "HyperMesh" -message "Get RBE Nodes GUI already exists! Please close the existing GUI to open a new one."
-		::GetRBENodes::closeGUI
 		return;
     }
 }
@@ -52,6 +51,11 @@ proc ::GetRBENodes::lunchGUI { {x -1} {y -1} } {
 				-minheight 120 \
 				-x $x -y $y \
 				-title "Get RBE Nodes" 
+				
+	.getRBENodesGUI insert apply Save_Mark
+	.getRBENodesGUI buttonconfigure Save_Mark \
+						-command "::GetRBENodes::saveMark" \
+						-state normal
 	.getRBENodesGUI buttonconfigure apply -command ::GetRBENodes::processBttn
 	.getRBENodesGUI buttonconfigure cancel -command ::GetRBENodes::closeGUI	
     .getRBENodesGUI hide ok
@@ -173,7 +177,6 @@ proc ::GetRBENodes::typeSelector { args } {
 proc ::GetRBENodes::processBttn {} { 
 	variable elemlist
 	variable elemlistfilt
-	variable entityoption
 	variable type
 	variable configlist
 	
@@ -237,6 +240,13 @@ proc ::GetRBENodes::closeGUI {} {
 proc ::GetRBENodes::clearVar {} {
 	variable elemlist []
 	variable elemlistfilt []
+}
+
+
+# ##############################################################################
+# Procedimiento para salvar la marca
+proc ::GetRBENodes::saveMark { } {
+    hm_saveusermark nodes 1
 }
 
 
