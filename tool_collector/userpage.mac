@@ -1,0 +1,2 @@
+*createbutton(5,"Tool Collector",5,5,5,YELLOW,
+"Launch the tool collector script","EvalTcl","C:\Users\Fran_\OneDrive\Escritorio\script_test\tool_collector\main_tool_collector.tcl")
