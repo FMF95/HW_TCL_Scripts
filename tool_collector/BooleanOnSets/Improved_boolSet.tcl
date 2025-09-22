@@ -27,6 +27,10 @@ namespace eval ::Aerospace::Imp_Boolean_Set {
 }
 
  #-----------------------------------------------------
+ 
+source [file join [file dirname [info script]] "Improved_boolSet.tbc"]
+
+ #-----------------------------------------------------
 proc ::Aerospace::Imp_Boolean_Set::helpFXN { args} {
 Message -msgTitle "Help" \
             -msgText "Step 1: Select Entity type for the set, nodes or elements.
