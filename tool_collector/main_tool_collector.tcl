@@ -160,6 +160,14 @@ proc ::ToolCollector::lunchPanelGUI { } {
 	
 	
 	#-----------------------------------------------------------------------------------------------
+	set c3_file_2 {C:/Users/Fran_/OneDrive/Escritorio/script_test/tool_collector/33.tool_check_loads_on_entities.tcl}
+	button $column3_1.button_2 -text "Check loads on entities" \
+	            -command "::ToolCollector::evalScript $c3_file_2"\
+	            -width 25 -bg #e6e664;
+    pack $column3_1.button_2 -side top -anchor n -pady 4;
+	
+	
+	#-----------------------------------------------------------------------------------------------
 	#-----------------------------------------------------------------------------------------------
 	set bottom [frame $mainframe.bottom];
     pack $bottom -side bottom -fill x -expand 0;
