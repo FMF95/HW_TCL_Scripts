@@ -1,5 +1,3 @@
-# ##############################################################################
-# Procedimiento para la creacion de la interfaz grafica de la aplicacion	
 # TclPro::Compiler::Include
 
 if {[catch {package require tbcload 1.3} err] == 1} {
@@ -7,18 +5,27 @@ if {[catch {package require tbcload 1.3} err] == 1} {
 }
 tbcload::bceval {
 TclPro ByteCode 1 0 1.3 8.3
-25 0 254 61 1 0 240 1 4 25 25 -1 -1
-254
-`:G<!(H&s!/HW<!cE`<!3)PpveN5942/YQ#5/o9vbA^B!8oJ=!:fAs!lQ80%<qQK%/HW<!n2
-o=!Ik^qveN594H^/*'@Po9vbA^B!NyY>!EfAs!v`c|(V|C?)/HW<!%&2?!a^!sveN594`D!s
-*Lto9vbA^B!fOq?!QfAs!l7ol,Q(Us!J(d>!oa7@!=3_Q5w|00.Njm<vS3n<vun<07zqdLK.
-Q(Us!rZEt+`fG%vs!.-/!1IH//HW<!8C4A!2'wuveN5941*''1_Xp9vbA^B!7msA!dfAs!A#
-ZZ2?);<3/HW<!D6LB!Fi2!#%!!
-25
-B=xOwM=xOwM=xOw7c/v!NLW-&M=xOw,!
-25
-M=xOwM=xOwM=xOwgIRS#MI@OwM=xOw+!
-61
+27 0 274 67 1 0 256 1 4 27 27 -1 -1
+274
+w0E<!-fSs!he?C!,Ki<!4fAs!l-@6#4;tl#/HW<!oiA=!?M1qvk/.36>vRK%;Ao9vhe?C!D>
+,>!@fAs!#E1*'HdJE'/HW<!%WP>!U:@rvk/.36TQ(w)Fbo9vhe?C!Z+;?!KfAs!.SyW*bP<9
++/HW<!1Jh?!m-Xsvk/.36l7ol,R1p9vhe?C!rsR@!WfAs!#+hf.W:Us!J(d>!&1n@!C3_Q5*
+>)*0Njm<vYEn<v&,=07z(XEE0W:Us!#*'u+`fG%v*j&'1-wBB1/HW<!DgjA!>KZuvk/.36=r
+tu2ejp9vhe?C!C<UB!jfAs!MkRT4Kq365/HW<!PZ-C!R8i!#%!!
+27
+@7xOwM=xOwM=xOwB/0v!D.<1%LLxOwB/0v
+27
+K=xOwM=xOwM=xOwb|9U#Ud+a'J=xOwA)'v
+67
+x
+8
+rZ!eDoEV5B
+x
+6
+K_;EFIkw
+x
+5
+I*9S/Y!
 x
 4
 ,CHr@
@@ -725,6 +732,42 @@ jOfV@8v
 =AhEF
 35 0 1
 x
+32
+L&8xF)qT;@a_ObDXJcf;(kT;@,P_|3BJ*QAulSCF
+x
+5
+aC'B+/v
+p
+2 0 12 2 0 0 8 0 2 2 2 -1 -1
+12
+w0E<!6>L3w6f<!!
+2
+(6!
+2
+,-!
+2
+x
+8
+*XxlBagbSA
+x
+12
+CPD*FfIBq@26sJD
+0
+0
+3 4
+1
+#v
+0 0 257
+1
+t!
+1 0 257
+1
+/v
+2 0 257
+12
+CPD*FfIBq@26sJD
+3 0 1
+x
 36
 L&8xF)qT;@a_ObDXJcf;(kT;@,P_|3s^oRAVpbSA0&6cE
 x
@@ -856,81 +899,11 @@ kL2-
 y=w,
 1 0 257
 x
-32
-L&8xF)qT;@a_ObDXJcf;(kT;@,P_|3)lP)Fl8AQ8
-x
-0
-
-p
-14 0 112 18 3 0 56 1 3 14 14 -1 -1
-112
-w0E<!qS<07z(H&s!-BW<!=%:-8p|yTv,?W<!1T&s!2/YQ#-BW<!8;kpvkt?(!#0E<!5Atpv+
-TA9v*V!S7iF#!!/;UNw<k60%.EW<!=%:-8wZQK%B:3-&Yb'4-/9N<!xr%p+75fv!
-14
-;(!L%9Dt6#IOW-&,B!
-14
-FV5UvGae*'YNPa'/3!
-18
-x
-8
-*XxlBagbSA
-x
-6
-hyZb<J%%
-x
-7
-(#;EF'Lr-
-x
-24
-EvMEF)wBCFNhe;@l?3|F%g`aE+9AQ8
-i
-0
-x
-14
-d(ap@qN`aE#j<NCN%%
-x
-13
-d(ap@qN`aEwF*+E1v
-x
-13
-+jbSAnwU;@v+hgC8v
-i
-1
-i
-2
-x
-6
-:TBfD^+%
-x
-9
-njkSAt=sp@1v
-x
-6
-gpbSAPSw
-x
-22
-L&8xF)qT;@a_ObDXJcf;(kT;@b:%
-x
-5
-,=;oA;v
-x
-5
-1lo(F@v
-x
-2
-^Ow
-x
-0
-
-3
-C 1 12 6 -1 -1 23
-C 1 55 6 -1 -1 66
-C 1 74 8 -1 -1 87
-0
-0 0
-x
 35
 L&8xF)qT;@a_ObDXJcf;(kT;@,P_|3,CHr@Z3@?6#nc,
+x
+0
+
 p
 37 0 324 34 1 0 232 1 7 37 37 -1 -1
 324
@@ -1061,6 +1034,76 @@ L 1 297 11 311 285 -1
 12
 nEi'FfIBq@26sJD
 0 0 1
+x
+32
+L&8xF)qT;@a_ObDXJcf;(kT;@,P_|3)lP)Fl8AQ8
+p
+14 0 112 18 3 0 56 1 3 14 14 -1 -1
+112
+w0E<!qS<07z(H&s!-BW<!=%:-8p|yTv,?W<!1T&s!2/YQ#-BW<!8;kpvkt?(!#0E<!5Atpv+
+TA9v*V!S7iF#!!/;UNw<k60%.EW<!=%:-8wZQK%B:3-&Yb'4-/9N<!xr%p+75fv!
+14
+;(!L%9Dt6#IOW-&,B!
+14
+FV5UvGae*'YNPa'/3!
+18
+x
+8
+*XxlBagbSA
+x
+6
+hyZb<J%%
+x
+7
+(#;EF'Lr-
+x
+24
+EvMEF)wBCFNhe;@l?3|F%g`aE+9AQ8
+i
+0
+x
+14
+d(ap@qN`aE#j<NCN%%
+x
+13
+d(ap@qN`aEwF*+E1v
+x
+13
++jbSAnwU;@v+hgC8v
+i
+1
+i
+2
+x
+6
+:TBfD^+%
+x
+9
+njkSAt=sp@1v
+x
+6
+gpbSAPSw
+x
+22
+L&8xF)qT;@a_ObDXJcf;(kT;@b:%
+x
+5
+,=;oA;v
+x
+5
+1lo(F@v
+x
+2
+^Ow
+x
+0
+
+3
+C 1 12 6 -1 -1 23
+C 1 55 6 -1 -1 66
+C 1 74 8 -1 -1 87
+0
+0 0
 x
 33
 L&8xF)qT;@a_ObDXJcf;(kT;@,P_|3b7a:@h!`aE?v
@@ -1998,6 +2041,6 @@ x
 15
 rpwhC;Z2b3<?<+EfqT+
 1
-C 1 172 8 -1 -1 185
+C 1 192 8 -1 -1 205
 0
 }

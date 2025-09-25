@@ -1,4 +1,4 @@
-clear
+encoding system utf-8
 
 # Esta herramienta borra las cargas aplicadas a nodos o elementos para un load collector.
 # Para ello es necesario proporcionar los load collectors de los que se quieren eliminar las cargas.
@@ -50,7 +50,7 @@ proc ::DeleteLoadEntity::redirect_puts {args} {
 # ##############################################################################
 # Reemplazamos puts por redirect_puts en el espacio de nombres global
 proc ::DeleteLoadEntity::puts args {::DeleteLoadEntity::redirect_puts {*}$args}	
-	
+
 
 # ##############################################################################
 # ##############################################################################

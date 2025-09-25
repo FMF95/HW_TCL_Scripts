@@ -1,4 +1,4 @@
-clear
+encoding system utf-8
 
 # Esta herramienta renumera nodos, elementos, propiedades, etc, dentro de un componente a partir de su id.
 # Para ello es necesario proporcionar los componentes de los que se quieren renumerar.
@@ -26,6 +26,8 @@ namespace eval ::RenumberByComp {
 	variable guiRecess
 
 }
+
+
 # ##############################################################################
 # ##############################################################################
 
@@ -47,7 +49,7 @@ proc ::RenumberByComp::redirect_puts {args} {
 # ##############################################################################
 # Reemplazamos puts por redirect_puts en el espacio de nombres global
 proc ::RenumberByComp::puts args {::RenumberByComp::redirect_puts {*}$args}	
-	
+
 
 # ##############################################################################
 # ##############################################################################

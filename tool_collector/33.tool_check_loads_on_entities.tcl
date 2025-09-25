@@ -1,4 +1,4 @@
-clear
+encoding system utf-8
 
 # Esta herramienta chequea las cargas aplicadas a nodos o elementos para un load collector.
 # Para ello es necesario proporcionar los load collectors de los que se quieren revisar las cargas.
@@ -37,7 +37,7 @@ namespace eval ::CheckLoadEntity {
 
 
 source [file join [file dirname [info script]] "33.tool_check_loads_on_entities.tbc"]
-	
+
 	
 # ##############################################################################	
 # Procedimiento para redirigir puts
@@ -53,11 +53,10 @@ proc ::CheckLoadEntity::redirect_puts {args} {
 # ##############################################################################
 # Reemplazamos puts por redirect_puts en el espacio de nombres global
 proc ::CheckLoadEntity::puts args {::CheckLoadEntity::redirect_puts {*}$args}	
-	
-	
-# ##############################################################################
-# ##############################################################################
 
+
+# ##############################################################################
+# ##############################################################################
 
 # Se lanza la aplicacion
 ::CheckLoadEntity::lunchGUI

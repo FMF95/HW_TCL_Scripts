@@ -1,3 +1,5 @@
+encoding system utf-8
+
 # 
 # 
 # 
@@ -55,22 +57,6 @@ proc ::AutomateLoadsSummary::redirect_puts {args} {
 # ##############################################################################
 # Reemplazamos puts por redirect_puts en el espacio de nombres global
 proc ::AutomateLoadsSummary::puts args {::AutomateLoadsSummary::redirect_puts {*}$args}	
-
-
-# ##############################################################################
-# Procedimiento para la seleccion de la lista
-proc ::AutomateLoadsSummary::OnSelect {W S c} {
-    variable rowselection
-	
-    #puts [info level 0]
-	#puts "W: $W"
-	#puts "S: $S"
-	#puts "c: $c"
-	
-	set rowselection $S
-
-}
-
 
 # ##############################################################################
 # ##############################################################################

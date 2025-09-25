@@ -1,4 +1,4 @@
-clear
+encoding system utf-8
 
 # Herramienta que permite ajustar los offset de distintas propiedades de una malla 2D que comparten la misma superficie.
 # Se introducen las propiedades sobre las que se quiere aplicar el offset. Y se elige cuál de sus caras se quiere hacer coincidir.
@@ -55,7 +55,7 @@ proc ::FastZOFFS::redirect_puts {args} {
 # ##############################################################################
 # Reemplazamos puts por redirect_puts en el espacio de nombres global
 proc ::FastZOFFS::puts args {::FastZOFFS::redirect_puts {*}$args}	
-	
+
 
 # ##############################################################################
 # ##############################################################################
