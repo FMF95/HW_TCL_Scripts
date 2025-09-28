@@ -168,6 +168,14 @@ proc ::ToolCollector::lunchPanelGUI { } {
 	
 	
 	#-----------------------------------------------------------------------------------------------
+	set c3_file_3 {C:/Users/Fran_/OneDrive/Escritorio/script_test/tool_collector/9.tool_material_orientation_check.tcl}
+	button $column3_1.button_3 -text "Material orientation check" \
+	            -command "::ToolCollector::evalScript $c3_file_3"\
+	            -width 25 -bg #e6e664;
+    pack $column3_1.button_3 -side top -anchor n -pady 4;
+	
+	
+	#-----------------------------------------------------------------------------------------------
 	#-----------------------------------------------------------------------------------------------
 	set bottom [frame $mainframe.bottom];
     pack $bottom -side bottom -fill x -expand 0;
