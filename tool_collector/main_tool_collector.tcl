@@ -141,6 +141,13 @@ proc ::ToolCollector::lunchPanelGUI { } {
 	            -width 25 -bg #e6e664;
     pack $column2_2.button_7 -side top -anchor n -pady 4;
 	
+	#-----------------------------------------------------------------------------------------------
+	set c2_file_8 {C:/Users/Fran_/OneDrive/Escritorio/script_test/tool_collector/34.tool_set_coupling_CTE.tbc}
+	button $column2_2.button_8 -text "Set Coupling elements CTE" \
+	            -command "::ToolCollector::evalScript $c2_file_8"\
+	            -width 25 -bg #e6e664;
+    pack $column2_2.button_8 -side top -anchor n -pady 4;
+	
 	
 	#-----------------------------------------------------------------------------------------------
 	#-----------------------------------------------------------------------------------------------
