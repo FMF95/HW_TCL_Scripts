@@ -205,11 +205,6 @@ proc ::SetCouplingCTE::processBttn {} {
 		tk_messageBox -title "Fast Coupling" -message "No element type defined. \nPlease choose the coupling element type." -parent .setCouplingCTEGUI		
         return
 	}
-	
-	puts $entityoption
-	puts $entitylist
-	puts $type
-    puts $cte
 
 	
 	#-----------------------------------------------------------------------------------------------
@@ -366,4 +361,5 @@ proc ::SetCouplingCTE::completemsg {message} {
 # ##############################################################################
 
 # Se lanza la aplicacion
+
 ::SetCouplingCTE::lunchGUI
