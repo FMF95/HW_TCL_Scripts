@@ -1,8 +1,5 @@
 encoding system utf-8
 
-set scriptDir [file dirname [info script]]
-source [file join $scriptDir hm_roll_dice.tbc]
-
 # HWVERSION_2019.1.0.20_Jun 28 2019_20:45:2
 # HWVERSION_2019.1.0.20_Aug 26 2025_Improved_Version_FMF
 
