@@ -31,9 +31,6 @@ namespace eval ::RenumberByComp {
 # ##############################################################################
 # ##############################################################################
 
-
-source [file join [file dirname [info script]] "25.tool_renumber_by_component.tbc"]
-
 	
 # ##############################################################################	
 # Procedimiento para redirigir puts
@@ -49,10 +46,8 @@ proc ::RenumberByComp::redirect_puts {args} {
 # ##############################################################################
 # Reemplazamos puts por redirect_puts en el espacio de nombres global
 proc ::RenumberByComp::puts args {::RenumberByComp::redirect_puts {*}$args}	
-
-
+	
+	
 # ##############################################################################
-# ##############################################################################
 
-# Se lanza la aplicacion
-::RenumberByComp::lunchGUI
+source [file join [file dirname [info script]] "25.tool_renumber_by_component.tbc"]
