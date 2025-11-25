@@ -39,9 +39,6 @@ namespace eval ::AutomateLoadsSummary {
 # ##############################################################################
 # ##############################################################################
 
-
-source [file join [file dirname [info script]] "30.tool_loads_summary.tbc"]
-
 	
 # ##############################################################################	
 # Procedimiento para redirigir puts
@@ -58,8 +55,7 @@ proc ::AutomateLoadsSummary::redirect_puts {args} {
 # Reemplazamos puts por redirect_puts en el espacio de nombres global
 proc ::AutomateLoadsSummary::puts args {::AutomateLoadsSummary::redirect_puts {*}$args}	
 
-# ##############################################################################
+
 # ##############################################################################
 
-# Se lanza la aplicacion
-::AutomateLoadsSummary::lunchGUI
+source [file join [file dirname [info script]] "30.tool_loads_summary.tbc"]
