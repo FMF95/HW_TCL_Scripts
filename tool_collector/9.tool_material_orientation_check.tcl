@@ -1,4 +1,5 @@
 encoding system utf-8
+
 # Esta herramienta chequea las propiedades del modelo y devuelve las que son de compuesto y tienen elementos sin ejes material.
 
 
@@ -26,9 +27,6 @@ namespace eval ::MatOrientationCheck {
 # ##############################################################################
 # ##############################################################################
 
-
-source [file join [file dirname [info script]] "9.tool_material_orientation_check.tbc"]
-
 	
 # ##############################################################################	
 # Procedimiento para redirigir puts
@@ -49,7 +47,5 @@ proc ::MatOrientationCheck::puts args {::MatOrientationCheck::redirect_puts {*}$
 
 
 # ##############################################################################
-# ##############################################################################
 
-# Se lanza la aplicacion
-::MatOrientationCheck::lunchGUI
+source [file join [file dirname [info script]] "9.tool_material_orientation_check.tbc"]
