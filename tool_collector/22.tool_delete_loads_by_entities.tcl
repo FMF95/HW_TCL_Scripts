@@ -32,9 +32,6 @@ namespace eval ::DeleteLoadEntity {
 # ##############################################################################
 # ##############################################################################
 
-
-source [file join [file dirname [info script]] "22.tool_delete_loads_by_entities.tbc"]
-
 	
 # ##############################################################################	
 # Procedimiento para redirigir puts
@@ -50,10 +47,8 @@ proc ::DeleteLoadEntity::redirect_puts {args} {
 # ##############################################################################
 # Reemplazamos puts por redirect_puts en el espacio de nombres global
 proc ::DeleteLoadEntity::puts args {::DeleteLoadEntity::redirect_puts {*}$args}	
-
+	
 
 # ##############################################################################
-# ##############################################################################
 
-# Se lanza la aplicacion
-::DeleteLoadEntity::lunchGUI
+source [file join [file dirname [info script]] "22.tool_delete_loads_by_entities.tbc"]
