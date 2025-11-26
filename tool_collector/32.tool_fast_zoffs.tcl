@@ -35,9 +35,6 @@ namespace eval ::FastZOFFS {
 # ##############################################################################
 # ##############################################################################
 
-
-source [file join [file dirname [info script]] "32.tool_fast_zoffs.tbc"]
-
 	
 # ##############################################################################	
 # Procedimiento para redirigir puts
@@ -55,10 +52,9 @@ proc ::FastZOFFS::redirect_puts {args} {
 # ##############################################################################
 # Reemplazamos puts por redirect_puts en el espacio de nombres global
 proc ::FastZOFFS::puts args {::FastZOFFS::redirect_puts {*}$args}	
-
+	
 
 # ##############################################################################
 # ##############################################################################
 
-# Se lanza la aplicacion
-::FastZOFFS::lunchGUI
+source [file join [file dirname [info script]] "32.tool_fast_zoffs.tbc"]
