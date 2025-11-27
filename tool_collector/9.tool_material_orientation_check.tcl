@@ -45,7 +45,7 @@ proc ::MatOrientationCheck::redirect_puts {args} {
 # Reemplazamos puts por redirect_puts en el espacio de nombres global
 proc ::MatOrientationCheck::puts args {::MatOrientationCheck::redirect_puts {*}$args}	
 
-
+# ##############################################################################
 # ##############################################################################
 
 source [file join [file dirname [info script]] "9.tool_material_orientation_check.tbc"]
