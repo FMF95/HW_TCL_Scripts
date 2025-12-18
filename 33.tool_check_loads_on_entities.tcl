@@ -21,7 +21,7 @@ catch { namespace delete ::CheckLoadEntity }
 # Creacion de namespace de la aplicacion
 namespace eval ::CheckLoadEntity {
 	variable loadcollist []
-	variable entityoptions "nodes"
+	variable entityoptions "nodes elems"
 	variable entityoption "nodes"
 	variable entitylist []
 	variable entitytype
@@ -394,9 +394,16 @@ proc ::CheckLoadEntity::checkLoads { entitytype selectedentities loadcollist } {
         ::CheckLoadEntity::puts " Finished."
         return    
     }
+	
+	# Se prepara un diccionario con los elementos elegidos para poder hacer busquedas rapidas
+	
+	set selecteddict {}
+    foreach item $selectedentities {
+        dict set selecteddict $item 1
+    }
     
+	# Se crea la lista de ids de loads
     set loadslist ""
-    
     foreach loadcol $loadcollist {
         *createmark loads 1 "by collector id" $loadcol
         set collectorloads [hm_getmark loads 1]
@@ -405,19 +412,26 @@ proc ::CheckLoadEntity::checkLoads { entitytype selectedentities loadcollist } {
 	
 	set allsteps [expr [llength $loadslist] + 1 ]
     
+	# Se socian loads y entities
     set entitylist ""
     set warn "0"
     foreach load $loadslist {
+		
+		# Se omiten las cargas aplicadas a entiddades no seleccionadas
         set entity [hm_getvalue loads id=$load dataname=entityid]
-        set typename [hm_getvalue loads id=$load dataname=entitytypename]
-        if { $typename != "$entitytype" && $warn == "0" } {
-            ::CheckLoadEntity::puts " ⚠ Loads should be applied on $entitytype. Otherwhise they are ignored."
-            bell
-            ::CheckLoadEntity::puts " "
-            set warn "1"
-        } else {
-            lappend entitylist $entity
-        }
+		if {[dict exists $selecteddict $entity]} {
+		    
+			# Se omiten las cargas que se aplican a entidades de distinto tipo
+            set typename [hm_getvalue loads id=$load dataname=entitytypename]
+            if { $typename != "$entitytype" && $warn == "0" } {
+                ::CheckLoadEntity::puts " ⚠ Loads should be applied on $entitytype. Otherwhise they are ignored."
+                bell
+                ::CheckLoadEntity::puts " "
+                set warn "1"
+            } elseif {$typename == "$entitytype"} {
+                lappend entitylist $entity
+            }
+		}
 		
 	    ::ProgressBar::Increment $guiRecess.pb $allsteps
 		update
@@ -429,9 +443,9 @@ proc ::CheckLoadEntity::checkLoads { entitytype selectedentities loadcollist } {
     ::CheckLoadEntity::puts "  ───────────────────────────────── "
     ::CheckLoadEntity::puts " "
     ::CheckLoadEntity::puts "   Selected $entitytype: [llength $selectedentities]"
-    ::CheckLoadEntity::puts "   Number of $entitytype with loads: [llength $entitylist]"
-    ::CheckLoadEntity::puts "   Number of $entitytype with missing loads: [llength [dict keys $missing]]"
-    ::CheckLoadEntity::puts "   Number of $entitytype with duplicates loads: [llength [dict keys $duplicates]]"
+    ::CheckLoadEntity::puts "   ➤ Number of $entitytype with loads: [llength $entitylist]"
+    ::CheckLoadEntity::puts "   ➤ Number of $entitytype with missing loads: [llength [dict keys $missing]]"
+    ::CheckLoadEntity::puts "   ➤ Number of $entitytype with duplicates loads: [llength [dict keys $duplicates]]"
     ::CheckLoadEntity::puts " "
     ::CheckLoadEntity::puts "  ───────────────────────────────── "
     ::CheckLoadEntity::puts " "
