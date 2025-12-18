@@ -21,7 +21,7 @@ catch { namespace delete ::CheckLoadEntity }
 # Creacion de namespace de la aplicacion
 namespace eval ::CheckLoadEntity {
 	variable loadcollist []
-	variable entityoptions "nodes"
+	variable entityoptions "nodes elems"
 	variable entityoption "nodes"
 	variable entitylist []
 	variable entitytype
@@ -50,8 +50,10 @@ proc ::CheckLoadEntity::redirect_puts {args} {
 # ##############################################################################
 # Reemplazamos puts por redirect_puts en el espacio de nombres global
 proc ::CheckLoadEntity::puts args {::CheckLoadEntity::redirect_puts {*}$args}	
-	
+
 
 # ##############################################################################
-	
+# ##############################################################################
+
+# Se lanza la aplicacion
 source [file join [file dirname [info script]] "33.tool_check_loads_on_entities.tbc"]
