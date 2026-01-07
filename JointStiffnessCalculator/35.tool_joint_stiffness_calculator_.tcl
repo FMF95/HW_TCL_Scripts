@@ -81,7 +81,7 @@ proc ::JointStiffnessCalculator::lunchGUI { {x -1} {y -1} } {
 				-propagate 1 \
 				-buttonboxpos se \
 				-minwidth 960 \
-				-minheight 480 \
+				-minheight 620 \
 				-x $x -y $y \
 				-title "Joint Stiffness Calculator"
 		
@@ -175,6 +175,7 @@ proc ::JointStiffnessCalculator::lunchGUI { {x -1} {y -1} } {
  	#-----------------------------------------------------------------------------------------------
  	#-----------------------------------------------------------------------------------------------
 	# Frame dfault
+	::hwt::AddPadding $sf1.f1 -height $sep;
 	variable lfDef
 	set lfDef [hwtk::labelframe  $sf1.f1.lfDef -text " Method: Default " -padding 4 -height 16]
     #pack $lfDef -side top -fill x;
@@ -258,7 +259,7 @@ proc ::JointStiffnessCalculator::lunchGUI { {x -1} {y -1} } {
 
 	pack $tlSingle_shear -side left -anchor nw -padx 8 -pady 8
 	pack $tlDouble_shear -side left -anchor nw -padx 8 -pady 8
-	$tlDouble_shear configure -state disabled
+	##$tlDouble_shear configure -state disabled
 	
 	SetCursorHelp $huthtyplbl_1 " Choose the whithin the joint is single or double shear. "
 	
@@ -1307,7 +1308,7 @@ proc ::JointStiffnessCalculator::methodHuth { optShear optPlate optBolt D Young 
 	lassign $parameters a b1 b2 n
 
     set KAxial [huthAxial $Young $D $t1 $t2]
-	set KShear [huthShear $Young $D $E1 $t1 $E2 $t2 $a $b1 $b2]
+	set KShear [huthShear $Young $D $E1 $t1 $E2 $t2 $n $a $b1 $b2]
 
     set [namespace current]::k1 $KAxial
 	set [namespace current]::k2 $KShear
@@ -1404,13 +1405,14 @@ proc huthAxial {Er dr t1 t2 } {
 #             t1:       thickness of sheet 1
 #             E2i:      E-Module of sheet 2 (i-direction when Composite)
 #             t2:       thickness of sheet 2
+#             n:        1 for single shear; 2 for double shear
 #             a:        2/3 for joints with bolts; 2/5 for joints with rivets
 #             b1:       3 for joint with bolts; 2.2 for joints with rivets; 4.2 for CFRP plate
 #             b2:       3 for joint with bolts; 2.2 for joints with rivets; 4.2 for CFRP plate       
 # Variables:
 # Returns:    ksi:      Fastener Shear Stiffness (i-direction)
 ############################################################################
-proc huthShear {Er dr E1i t1 E2i t2 a b1 b2} {
+proc huthShear {Er dr E1i t1 E2i t2 n a b1 b2} {
     set procName [info level 0]
     set curNs [namespace current]
     
@@ -1418,10 +1420,20 @@ proc huthShear {Er dr E1i t1 E2i t2 a b1 b2} {
     set tmp0 [expr { ($t1 + $t2) / (2.*$dr) }]
     set tmp1 [expr { pow($t1*$E1i,-1) + pow(2*$t1*$Er,-1) }]
     set tmp2 [expr { pow($t2*$E2i,-1) + pow(2*$t2*$Er,-1) }]
-    set Cs [expr { pow($tmp0,$a) * $b1 * $tmp1 + pow($tmp0,$a) * $b2 *$tmp2 }]
+    set Cs [expr { pow($tmp0,$a) * ($b1 / $n) * $tmp1 + pow($tmp0,$a) * ($b2 / pow($n,2)) *$tmp2 }]
     
     # evaluation of shear stiffness
     set ksi [expr {pow($Cs,-1)}]
+	
+	puts "n: $n"
+	puts "a: $a"
+	puts "b1: $b1"
+	puts "b2: $b2"
+	puts "tmp0: $tmp0"
+	puts "tmp1: $tmp1"
+	puts "tmp2: $tmp2"
+	puts "Cs: $Cs"
+	puts "ksi: $ksi"
 
     return $ksi
 # end proc huthShear ####################################
