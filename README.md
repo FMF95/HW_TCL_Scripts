@@ -36,3 +36,4 @@
 - 33 <ins><strong>tool_check_loads_on_entities</strong></ins>: Tool that checks the loads applied to nodes or elements for a load collector.
 - 34 <ins><strong>tool_set_coupling_CTE</strong></ins>: Tool that allows to set the value of the coefficient of thermal expansion for RBE2 and RBE3 type elements.
 - 35 <ins><strong>tool_joint_stiffness_calculator</strong></ins>: Tool that compiles various methods for calculating the flexibility of bolted joints.
+- 36 <ins><strong>tool_fast_cbush</strong></ins>:Tool that creates CBUSH from a selection of nodes.
