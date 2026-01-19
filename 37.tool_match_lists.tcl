@@ -134,10 +134,11 @@ proc ::MatchListsItems::lunchGUI { {x -1} {y -1} } {
 
  	#-----------------------------------------------------------------------------------------------
 	set outfrm [hwtk::labelframe  $guiRecess.outfrm -text " Output " -padding 4]
-    pack $outfrm -fill x -pady 4;
+    pack $outfrm -fill both -expand 1 -pady 4;
 	
+	variable text
 	set text [hwtk::text $outfrm.text -height 10 ]
-	pack $text -side left -anchor nw -padx 4 -pady 10
+	pack $text -fill both -expand 1 -padx 4 -pady 10
 	
 	::ProgressBar::CreateIndeterminatePB $guiRecess "pb"	
 	
@@ -306,7 +307,42 @@ proc ::MatchListsItems::processTypes { listA entitytypeA listB entitytypeB markc
             ::MatchListsItems::matchlists $listA $listB $markchk
 	    }
 		"elems" {
-		    ::MatchListsItems::puts_output "Under developement"
+			
+			set items_dict_A [dict create]
+			set items_dict_B [dict create]
+			
+			# Se generan los centroides de los elementos de la lista A
+			::MatchListsItems::puts_output "\n\u24b6 list items:"
+			foreach itemA $listA {
+			
+			    set cxA [hm_getvalue elem id= $itemA dataname= centerx]
+                set cyA [hm_getvalue elem id= $itemA dataname= centery]
+                set czA	[hm_getvalue elem id= $itemA dataname= centerz] 
+
+				eval *createnode $cxA $cyA $czA 0 0 0
+				set cA [hm_latestentityid nodes]
+				dict set items_dict_A $itemA $cA
+				
+				::MatchListsItems::puts_output "Item: $itemA Node: $cA"
+			}
+			
+			# Se generan los centroides de los elementos de la lista B
+			::MatchListsItems::puts_output "\n\u24b7 list items:"
+			foreach itemB $listB {
+			
+			    set cxB [hm_getvalue elem id= $itemB dataname= centerx]
+                set cyB [hm_getvalue elem id= $itemB dataname= centery]
+                set czB	[hm_getvalue elem id= $itemB dataname= centerz]
+				
+				eval *createnode $cxB $cyB $czB 0 0 0
+				set cB [hm_latestentityid nodes]
+				dict set items_dict_B $itemB $cB
+				
+				::MatchListsItems::puts_output "Item: $itemB, Node: $cB"
+			}
+			
+	        # Se lanza el proceso busqueda de equivalencias en los centroides
+            ::MatchListsItems::matchlists [dict values $items_dict_A] [dict values $items_dict_B] $markchk
 		}
 	}
 	return
@@ -408,13 +444,13 @@ proc ::MatchListsItems::matchlists { node_list_a node_list_b markchk } {
         *clearmark components 1
 	}
 
-    ::MatchListsItems::puts_output "\u29ea"
+    ::MatchListsItems::puts_output "\n\u29ea Matches:"
         
     # Crear líneas entre los nodos emparejados
     *tagtextdisplaymode 1
     foreach id_a $ID_A id_b $ID_B distance $Distance {
             
-        ::MatchListsItems::puts_output "ID_A: $id_a, ID_B: $id_b, Distance: $distance"
+        ::MatchListsItems::puts_output "Node A: $id_a, Node B: $id_b, Distance: $distance"
 		
         if { $markchk == 1 } { 
             # Para evitar crear erores si las listas son iguales
