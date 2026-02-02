@@ -205,7 +205,7 @@ proc ::SetCouplingCTE::processBttn {} {
 		tk_messageBox -title "Fast Coupling" -message "No element type defined. \nPlease choose the coupling element type." -parent .setCouplingCTEGUI		
         return
 	}
-
+	
 	
 	#-----------------------------------------------------------------------------------------------
     ::SetCouplingCTE::SetCTE
@@ -252,10 +252,10 @@ proc ::SetCouplingCTE::clearVar {} {
 proc ::SetCouplingCTE::SetRBE2CTE { element_list cte } {
 
 	foreach element_id $element_list {
-	      *startnotehistorystate {Attached attributes to element}
-	      *attributeupdateint elements $element_id 3240 1 2 0 1
-	      *attributeupdatedouble elements $element_id 4659 1 1 0 $cte
-	      *endnotehistorystate {Attached attributes to element}
+        *startnotehistorystate {Attached attributes to element}
+        *attributeupdateint elements $element_id 3240 1 2 0 1
+        *attributeupdatedouble elements $element_id 4659 1 1 0 $cte
+        *endnotehistorystate {Attached attributes to element}
 	}
 	
 	return
@@ -361,5 +361,4 @@ proc ::SetCouplingCTE::completemsg {message} {
 # ##############################################################################
 
 # Se lanza la aplicacion
-
 ::SetCouplingCTE::lunchGUI
