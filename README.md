@@ -37,4 +37,5 @@
 - 34 <ins><strong>tool_set_coupling_CTE</strong></ins>: Tool that allows to set the value of the coefficient of thermal expansion for RBE2 and RBE3 type elements.
 - 35 <ins><strong>tool_joint_stiffness_calculator</strong></ins>: Tool that compiles various methods for calculating the flexibility of bolted joints.
 - 36 <ins><strong>tool_fast_cbush</strong></ins>: Tool that creates CBUSH from a selection of nodes.
-- 37 <ins><strong>tool_match_lists</strong></ins>:Tool that compares two lists and finds the closest elements between them.
+- 37 <ins><strong>tool_match_lists</strong></ins>: Tool that compares two lists and finds the closest elements between them.
+- 38 <ins><strong>tool_numeration_check</strong></ins>:Tool that reviews the numbering contained in all the model's includes and displays the range for a specific entity.
