@@ -25,14 +25,17 @@ namespace eval ::ReviewTools {
 	variable entoptions "node element component property"
 	variable entoption "node"
 	variable lowran 1
-	variable higran 99999999
+	variable higran 99.999999
 	variable lowval 0
-	variable higval 100000000
+	variable higval 100
 	variable sr
 	variable lowent
 	variable higent
 	variable start 1
-	
+	variable update_scale 1
+	variable update_low_bound 1
+	variable update_high_bound 1
+	variable clr 4
 	
 }
 
@@ -100,6 +103,10 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	#-----------------------------------------------------------------------------------------------
 	# Notebook page Entity by range
     
+	
+	#-----------------------------------------------------------------------------------------------
+		
+		
 	set frf0 [hwtk::frame $ntbk.f0.frf0]
 	pack $frf0 -anchor nw -side top
 
@@ -112,12 +119,20 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	
 	set entitylf [hwtk::labelframe $frf0.entitylf -text " Entity type: "]
 	pack $entitylf -side left -anchor nw -padx 4 -pady 8
-    set cb [hwtk::combobox $frf0.entitylf.cb \
+	
+	pack [label $entitylf.lbl -text " Choose the entity type to review: " -justify left] -side top -anchor nw
+	
+    set cb [hwtk::combobox $entitylf.cb \
 	        -textvariable $entoption \
 			-state readonly \
 			-values $entoptions \
 			-selcommand "::ReviewTools::comboSelectorMethod %v"]
-	pack $cb -side top -anchor nw -padx 4 -pady 13
+	pack $cb -side left -anchor nw -padx 4 -pady 8
+	
+	set cbtn [hwtk::colorbutton $entitylf.cbtn -color 4 \
+	            -help "Color of the review" \
+	            -command "::ReviewTools::SetColor %I %H {%R}"]
+	pack $cbtn -side left -anchor center -padx 4 -pady 4
 	
 	$cb set $entoption
 	$cb invoke
@@ -128,6 +143,8 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	
 	set rangelf [hwtk::labelframe $frf0.rangelf -text " Entity ID range: " -width 1200]
 	pack $rangelf -side top -anchor nw -padx 4 -pady 8
+	
+	pack [label $rangelf.lbl -text " Define the range bounds (scale units 1E+6): " -justify left] -side top -anchor nw
 	
 	variable lowval
 	variable higval
@@ -141,7 +158,7 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
             	-inputtype unsignedinteger \
 				-width 10 \
 				-help "Lower value" \
-				-command "::ReviewTools::update_scale_low" \
+				-command "::ReviewTools::update_range low_entry" \
 				-textvariable ::ReviewTools::lowran ]
 	
 	
@@ -149,7 +166,7 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	            -inputtype unsignedinteger \
 				-width 10 \
 				-help "Higher value" \
-				-command "::ReviewTools::update_scale_high" \
+				-command "::ReviewTools::update_range high_entry" \
 				-textvariable ::ReviewTools::higran ]
 				
 	$lowent set $lowran
@@ -158,13 +175,11 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	set sr [hwtk::scalerange $rangelf.sr \
 	        -from $lowval \
 			-to $higval \
-			-command "::ReviewTools::update_entries"]
-    $sr configure -step 10000000 -showruler 1
+			-command "::ReviewTools::update_range scale"]
+    $sr configure -step 10 -showruler 1
     $sr startrange $lowval
     $sr endrange $higval
-	$sr startrange 1
 	
-	::ReviewTools::update_entries
 	pack $lowent -side left -anchor nw -padx 4 -pady 8	
     pack $sr -side left -anchor nw -padx 4 -pady 8
 	pack $higent -side left -anchor nw -padx 4 -pady 8
@@ -258,155 +273,109 @@ proc ::ReviewTools::comboSelectorMethod { args } {
 
 
 # ##############################################################################
-# Función para actualizar los entries cuando cambia la barra
-proc ::ReviewTools::update_entries {} {
+# Función para actualizar los rangos
+proc ::ReviewTools::update_range { widget } {
 
 	variable sr
 	variable lowent
 	variable higent
 	variable start
+	variable update_scale
+	variable update_low_bound
+	variable update_high_bound
 	
-	set save_low [$lowent get]
-	set save_high [$higent get]
+	switch $widget {
 	
-	if {$start == 1} {
-		set start 0
-		$lowent set [expr int([$sr startrange]/2)]
-		} else {
-	    $lowent set [expr int([$sr startrange])]
-	}
-	$higent set [expr int([$sr endrange])]
-	
-	if { $save_low == 0 } { $lowent set 1 }
-	if { $save_high == 0 } { $higent set 1 }
+	    "scale" {
+		    if { $update_scale == 1 } {
+			
+				set update_low_bound 1
+				set update_high_bound 1
+				set update_scale 0
 
-    return
+	            if {$start == 1} {
+		            set start 0
+		            $lowent set [expr int([$sr startrange]*1000000/2)]
+		            } else {
+	                $lowent set [expr int([$sr startrange]*1000000)]
+	            }
+	            $higent set [expr int([$sr endrange]*1000000)]
+				
+	            if { [$lowent get] == 0 } { $lowent set 1 }
+	            if { [$higent get] == 0 } { $higent set 1 }
+				
+				set update_low_bound 1
+				set update_high_bound 1
+				set update_scale 1
+				return
+				
+			} else { return }
+		}
+		"low_entry" {
+		    if { $update_low_bound == 1 } {
+				set update_low_bound 1
+				set update_high_bound 0
+				set update_scale 0
+				
+	            if { [$lowent get] > [$higent get] } { $lowent set [$higent get] }
+	
+	            set save_low [$lowent get]
+	            #set save_high [$higent get]
+
+	            if {$save_low == 0} {
+	                $lowent set 1
+		            } else {
+		            $lowent set $save_low
+	            }
+	
+	            $sr startrange [expr int([$lowent get]/1000000)]
+
+	            $lowent set [$lowent get]
+	            #$higent set $save_high
+				
+				set update_low_bound 1
+				set update_high_bound 1
+				set update_scale 1
+				return
+				
+			} else { return }
+		}
+		"high_entry" {
+		    if { $update_high_bound == 1 } {
+				set update_low_bound 0
+				set update_high_bound 1
+				set update_scale 0
+
+	            if { [$higent get] < [$lowent get] } { $higent set [$lowent get] }
+	
+	            set save_low [$lowent get]
+	            set save_high [$higent get]
+
+	            if {$save_high == 0} {
+	                $higent set 1
+		            } else {
+		            $higent set $save_high
+	            }
+	
+	            $sr endrange [expr int([$higent get]/1000000)]
+	
+	            #$lowent set $save_low
+	            $higent set [$higent get]
+				
+				set update_low_bound 1
+				set update_high_bound 1
+				set update_scale 1
+				return
+				
+			} else { return }
+		}
+	    default { return 1 }
+	}
+	
+	
+	return
 	
 }
-
-
-# ##############################################################################
-# Función para actualizar la barra cuando cambian los entries
-proc ::ReviewTools::update_scale_low {} {
-
-	variable sr
-	variable lowent
-	variable higent
-	
-	if { [$lowent get] > [$higent get] } { $lowent set [$higent get] }
-	
-	set save_low [$lowent get]
-	set save_high [$higent get]
-
-	if {$save_low == 0} {
-	    $lowent set 1
-		} else {
-		$lowent set $save_low
-	}
-	
-	#$sr startrange [$lowent get]
-
-	$lowent set [$lowent get]
-	$higent set $save_high
-
-	
-    return
-}
-
-# ##############################################################################
-# Función para actualizar la barra cuando cambian los entries
-proc ::ReviewTools::update_scale_high {} {
-
-	variable sr
-	variable lowent
-	variable higent
-	
-	if { [$higent get] < [$lowent get] } { $higent set [$lowent get] }
-	
-	set save_low [$lowent get]
-	set save_high [$higent get]
-
-	if {$save_high == 0} {
-	    $higent set 1
-		} else {
-		$higent set $save_high
-	}
-	
-	#$sr endrange [$higent get]
-	
-	$lowent set $save_low
-	$higent set [$higent get]
-
-	
-    return
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# ##############################################################################
-# ##############################################################################
-# ##############################################################################
-# ##############################################################################
-
-# ##############################################################################
-# ##############################################################################
-# ##############################################################################
-# ##############################################################################
-
-# ##############################################################################
-# ##############################################################################
-# ##############################################################################
-# ##############################################################################
-
-
-
-	
-	
-
-
 
 
 # ##############################################################################
@@ -421,6 +390,7 @@ proc ::ReviewTools::processBttn {} {
 	variable sr
 	variable lowent
 	variable higent
+	variable clr
 	
 	# Se limpia la review anterior si existe
 	::ReviewTools::clearreview
@@ -431,15 +401,24 @@ proc ::ReviewTools::processBttn {} {
 	    0 {
 		    #puts "tab index: $ntbk_indx"
 			
-	        #set lowran_bar [$sr startrange]
-	        #set higran_bar [$sr endrange]
-	        #puts "lowran_bar: $lowran_bar"
-	        #puts "higran_bar: $higran_bar"
 	        set lowran_ent [$lowent get]
 	        set higran_ent [$higent get]
-	        #puts "lowran_ent: $lowran_ent"
-	        #puts "higran_ent: $higran_ent"	
+			
+			# Check lower bound cero
+			if { $lowran_ent == 0 } { 
+			    $lowent set 1 
+                $sr startrange 1
+				set lowran_ent 1
+			}
+			
+			# Check upper bound cero
+			if { $higran_ent == 0 } { 
+			    $higent set 1 
+                $sr endrange 1
+				set higran_ent 1
+			}
 
+            # Comprobaciones
 	        if {[lsearch -exact $entoptions $entoption] < 0} {
 		        tk_messageBox -title "Review Tools" -message "  No valid entit type selected. \n  Please choose a valid entity type to review.  " -parent .reviewToolsGUI
                 return
@@ -452,16 +431,19 @@ proc ::ReviewTools::processBttn {} {
 		        tk_messageBox -title "Review Tools" -message "  No valid high range value. \n  Please choose positive value higher than lower bound.  " -parent .reviewToolsGUI
                 return
 	        }	
+			if { ([string length $clr] == 0) || (![string is integer -strict $clr]) || ($clr < 0) } {
+		        tk_messageBox -title "Review Tools" -message "  No valid color value. \n  Please choose a valid color for the review.  " -parent .reviewToolsGUI
+                return
+	        }
 			if { ($higran_ent < $lowran_ent)  } {
 		        tk_messageBox -title "Review Tools" -message "  No valid range value. \n  Please choose the upper bound greater than the lower bound of the range.  " -parent .reviewToolsGUI
                 return
 	        }			
 			
 			# Se lanza el metodo para mostrar entidades por rango
-			::ReviewTools::RangeReview $entoption $lowran_ent $higran_ent
+			::ReviewTools::RangeReview $entoption $lowran_ent $higran_ent $clr
 			
 			return
-			
 			
 		}
 		1 {
@@ -479,134 +461,7 @@ proc ::ReviewTools::processBttn {} {
 		}
 	}
 	
-
-	
-
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	return
-
-	variable ntbk 
-	variable lfmeth
-	variable method
-	variable methods
-    variable k1
-	variable k2
-	variable k3
-	variable k4
-	variable k5
-	variable k6
-	
-	# Default method variables
-	variable defaultoptions
-	variable defaultoption
-	variable defaultvalue
-	
-	# Huth method variables
-	variable huthtype_1
-	variable huthtypeoptions_1
-	variable huthtype_2
-	variable huthtypeoptions_2
-	variable huthtype_3
-	variable huthtypeoptions_3
-	variable huthboltdiam
-	variable huthyoungs
-	variable hutht1
-	variable huthE1
-	variable hutht2
-    variable huthE2
-	
-	# Check metodo valido
-	if {[lsearch -exact $methods $method] < 0} {
-		tk_messageBox -title "Joint Stiffness Calculator" -message "  No valid method is selected. \n  Please choose a valid calculation method.  " -parent .reviewToolsGUI
-        return
-	}	
-	
-	# Checks para cada metodo
-	switch $method {
-	    " Default " {
-			if {[lsearch -exact $defaultoptions $defaultoption] < 0} {
-		        tk_messageBox -title "Joint Stiffness Calculator" -message "  No valid Option selected. \n  Please choose a valid Option.  " -parent .reviewToolsGUI
-                return
-	        }	
-	        if { $defaultvalue < 0 && $defaultoption == "Value" } {
-		        tk_messageBox -title "Joint Stiffness Calculator" -message "  No valid Value. \n  Please choose positive Value for Ki stiffness.  " -parent .reviewToolsGUI
-                return
-	        }
-		}
-		" Huth " {
-			if {[lsearch -exact $huthtypeoptions_1 $huthtype_1] < 0} {
-		        tk_messageBox -title "Joint Stiffness Calculator" -message "  No valid Joint Type selected. \n  Please choose a valid Joint Type for Huth method.  " -parent .reviewToolsGUI
-                return
-	        }	
-			if {[lsearch -exact $huthtypeoptions_2 $huthtype_2] < 0} {
-		        tk_messageBox -title "Joint Stiffness Calculator" -message "  No valid Plate Types selected. \n  Please choose valid Plate Types for Huth method.  " -parent .reviewToolsGUI
-                return
-	        }	
-			if {[lsearch -exact $huthtypeoptions_3 $huthtype_3] < 0} {
-		        tk_messageBox -title "Joint Stiffness Calculator" -message "  No valid Bolt Type selected. \n  Please choose a valid Bolt Type for Huth method according with selected Plate Types.  " -parent .reviewToolsGUI
-                return
-	        }	
-			if { ([string length $huthboltdiam] == 0) || (![string is double -strict $huthboltdiam]) || ($huthboltdiam <= 0) } {
-		        tk_messageBox -title "Joint Stiffness Calculator" -message "  No valid Bolt Diameter selected. \n  Please choose a valid Bolt Diameter for Huth method.  " -parent .reviewToolsGUI
-                return
-	        }	
-			if { ([string length $huthyoungs] == 0) || (![string is double -strict $huthyoungs]) || ($huthyoungs <= 0) } {
-		        tk_messageBox -title "Joint Stiffness Calculator" -message "  No valid Bolt's material Young's modulus selected. \n  Please choose a valid Young's modulus for bolt material for Huth method.  " -parent .reviewToolsGUI
-                return
-	        }	
-			if { ([string length $hutht1] == 0) || (![string is double -strict $hutht1]) || ($hutht1 <= 0) } {
-		        tk_messageBox -title "Joint Stiffness Calculator" -message "  No valid Thickness for Plate 1 selected. \n  Please choose a valid Thickness for Plate 1 for Huth method.  " -parent .reviewToolsGUI
-                return
-	        }
-			if { ([string length $huthE1] == 0) || (![string is double -strict $huthE1]) || ($huthE1 <= 0) } {
-		        tk_messageBox -title "Joint Stiffness Calculator" -message "  No valid Young's modulus for Plate 1 selected. \n  Please choose a valid Young's modulus for the material of the Plate 1 for Huth method.  " -parent .reviewToolsGUI
-                return
-	        }
-			if { ([string length $hutht2] == 0) || (![string is double -strict $hutht2]) || ($hutht2 <= 0) } {
-		        tk_messageBox -title "Joint Stiffness Calculator" -message "  No valid Thickness for Plate 2 selected. \n  Please choose a valid Thickness for Plate 2 for Huth method.  " -parent .reviewToolsGUI
-                return
-	        }	
-			if { ([string length $huthE2] == 0) || (![string is double -strict $huthE2]) || ($huthE2 <= 0) } {
-		        tk_messageBox -title "Joint Stiffness Calculator" -message "  No valid Young's modulus for Plate 2 selected. \n  Please choose a valid Young's modulus for the material of the Plate 2 for Huth method.  " -parent .reviewToolsGUI
-                return
-	        }			
-		}
-		" Tate & Rosenfeld " {
-            tk_messageBox -title "Joint Stiffness Calculator" -message "  Not defined method. \n  Please choose a different calculation method.  " -parent .reviewToolsGUI
-            return
-		}
-		default {
-		    return 1;
-		}
-	}
-	
-	
-	# Se lanza el calculo para cada metodo
-	switch $method {
-	    " Default " { ::ReviewTools::methodDefault $defaultoption $defaultvalue }
-		" Huth " { ::ReviewTools::methodHuth $huthtype_1 $huthtype_2 $huthtype_3 $huthboltdiam $huthyoungs $hutht1 $huthE1 $hutht2 $huthE2 }
-		default {
-		    return 1;
-		}
-	}
-
-	return
-	
+    return
 }
 
 
@@ -617,7 +472,6 @@ proc ::ReviewTools::clearreview {} {
 }
 
 
-	
 # ##############################################################################
 # Procedimiento para cerrar la interfaz grafica
 proc ::ReviewTools::closeGUI {} {
@@ -649,11 +503,27 @@ proc ::ReviewTools::clearVar {} {
 	variable lowent 0
 	variable higent 0
 	variable start 1
-	
-	
-	bell
-}
+	variable update_scale 1
+	variable update_low_bound 1
+	variable update_high_bound 1
+	variable clr 4
 
+}
+	
+
+# ##############################################################################
+# Proceso para establecer el color
+proc ::ReviewTools::SetColor { i color rgb } {
+    
+	variable clr
+	#puts $i
+	#puts $Color
+	#puts $rgb
+	set clr $i
+	return
+
+}
+	
 
 # ##############################################################################
 # get unique name------------------------------------------------
@@ -691,19 +561,19 @@ proc ::ReviewTools::GetNewName { type name } {
 
 # ##############################################################################
 # Procedimiento para review por rango
-proc ::ReviewTools::RangeReview { type lower_bound upper_bound } {
-
-    puts "type: $type"
-	puts "lower_bound: $lower_bound"
-	puts "upper_bound: $upper_bound"
+proc ::ReviewTools::RangeReview { type lower_bound upper_bound color} {
 	
 	if {$type == "node"} {
 	    
 		*clearmark nodes 1
 		*clearmark nodes 2
 		eval *createmark nodes 1 $lower_bound-$upper_bound
+		if {[llength [hm_getmark nodes 1]] == 0 } {
+            error "No $type to review. There are no nodes within the bounds."
+			return
+        }			
         *createmark nodes 2 0-0
-        *reviewtwomark 1 2 4 6
+        eval *reviewtwomark 1 2 $color 6
 		*clearmark nodes 1
 		*clearmark nodes 2
 		
@@ -711,17 +581,17 @@ proc ::ReviewTools::RangeReview { type lower_bound upper_bound } {
 	    eval *clearmark $type 1
 		eval *clearmark $type 2
 		eval *createmark $type 1 $lower_bound-$upper_bound
-        *reviewentitybymark 1 4 1 0
+		if {[llength [hm_getmark $type 1]] == 0 } {
+            error "No $type to review. There are no $type within the bounds."
+			return
+        }	
+        eval *reviewentitybymark 1 $color 1 0
 		*clearmark $type 1
 	}
 
     return
 	
 }
-
-
-
-
 
 
 # ##############################################################################
