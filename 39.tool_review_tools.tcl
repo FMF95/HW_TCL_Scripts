@@ -22,6 +22,7 @@ namespace eval ::ReviewTools {
 	
 	variable ntbk 
 	
+	# variables f0
 	variable entoptions "node element component property"
 	variable entoption "node"
 	variable lowran 1
@@ -37,6 +38,11 @@ namespace eval ::ReviewTools {
 	variable update_high_bound 1
 	variable clr 4
 	
+	# variables f1
+	variable include []
+	variable clr_1 4
+	variable clr_2 6
+	variable clr_3 3
 }
 
 
@@ -95,7 +101,7 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	set ntbk [hwtk::notebook $guiRecess.ntbk]
 	
 	$ntbk add [frame $ntbk.f0] -text " Entity by range "
-	$ntbk add [frame $ntbk.f1] -text " Huth "
+	$ntbk add [frame $ntbk.f1] -text " Include frontier "
     $ntbk add [frame $ntbk.f2] -text " Default "
 	
 
@@ -117,26 +123,25 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	variable entoption 
 	variable entoptions
 	
-	set entitylf [hwtk::labelframe $frf0.entitylf -text " Entity type: "]
-	pack $entitylf -side left -anchor nw -padx 4 -pady 8
+	set entitylf0 [hwtk::labelframe $frf0.entitylf0 -text " Entity type: "]
+	pack $entitylf0 -side left -anchor nw -padx 4 -pady 8
 	
-	pack [label $entitylf.lbl -text " Choose the entity type to review: " -justify left] -side top -anchor nw
+	pack [label $entitylf0.lbl -text " Choose the entity type to review: " -justify left] -side top -anchor nw
 	
-    set cb [hwtk::combobox $entitylf.cb \
+    set cb [hwtk::combobox $entitylf0.cb \
 	        -textvariable $entoption \
 			-state readonly \
 			-values $entoptions \
 			-selcommand "::ReviewTools::comboSelectorMethod %v"]
 	pack $cb -side left -anchor nw -padx 4 -pady 8
 	
-	set cbtn [hwtk::colorbutton $entitylf.cbtn -color 4 \
+	set cbtn [hwtk::colorbutton $entitylf0.cbtn -color 4 \
 	            -help "Color of the review" \
-	            -command "::ReviewTools::SetColor %I %H {%R}"]
+	            -command "::ReviewTools::SetColor clr %I %H {%R}"]
 	pack $cbtn -side left -anchor center -padx 4 -pady 4
 	
 	$cb set $entoption
 	$cb invoke
-
 
 	#-----------------------------------------------------------------------------------------------
 	
@@ -183,31 +188,69 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	pack $lowent -side left -anchor nw -padx 4 -pady 8	
     pack $sr -side left -anchor nw -padx 4 -pady 8
 	pack $higent -side left -anchor nw -padx 4 -pady 8
-
-
+	
+	
 	#-----------------------------------------------------------------------------------------------
 	#-----------------------------------------------------------------------------------------------
-	# Notebook page Huth
+	# Notebook page Include frontier
+    
 	
+	#-----------------------------------------------------------------------------------------------
+		
+		
+	set frf1 [hwtk::frame $ntbk.f1.frf1]
+	pack $frf1 -anchor nw -side top
 	
-	::hwt::AddPadding $ntbk.f1 -height $sep;
+	::hwt::AddPadding $frf1 -height $sep;
+    #set lblf1 [label $frf1.lblf1 -text " Select the entit type and the range to review. " -width 100 -justify left] 
+	#pack $lblf1 -side left -anchor nw
 	
-	pack [label $ntbk.f1.lbl_1 -text " Huth H, \"Zum Einfluβ der Nietnachgiebigkeit mehrreihiger Nietverbindungen auf die " \
-            -width 100] -side top -anchor n
-	pack [label $ntbk.f1.lbl_2 -text " Lastübertragungs und Lebensddauervorhersage\" Bericht Nr. FB-172 (1984). " \
-            -width 100] -side top -anchor n
-			
-	::hwt::AddPadding $ntbk.f1 -height $sep;
+	set entitylf1 [hwtk::labelframe $frf1.entitylf1 -text " Include nodes review: "]
+	pack $entitylf1 -side left -anchor nw -padx 4 -pady 8
 	
-	pack [ hwtk::radiobutton $ntbk.f1.img1 \
-			-help "Huth formula" \
-			-takefocus 1 \
-			-compound none ] -side top -anchor n
-			
-	pack [ hwtk::radiobutton $ntbk.f1.img2 \
-			-help "Huth formula parameters" \
-			-takefocus 1 \
-			-compound none ] -side top -anchor n
+	pack [label $entitylf1.lbl -text " Choose the include to review and the colour of the inner and outter nodes: " -justify left] -side top -anchor nw
+	
+	set inclbl [hwtk::label $entitylf1.inclbl -text "Select Include: " -width 20]
+	pack $inclbl -side left -anchor nw -padx 4 -pady 8
+
+	set incsel [ Collector $entitylf1.incsel entity 1 HmMarkCol \
+                        -types "include" \
+                        -withtype 0 \
+                        -withReset 1 \
+                        -width [hwt::DluWidth  60] \
+                        -callback "::ReviewTools::incSelector include"];				
+				
+	set inccol $entitylf1.incsel	
+	#$entitylf1.incsel invoke
+	pack $inccol -side top -anchor nw -padx 4 -pady 8
+	SetCursorHelp $inclbl " Include to review its nodes. "
+
+	set cbtn_1lbl [hwtk::label $entitylf1.cbtn_1lbl -text "Inner nodes color: " -width 20]
+	pack $cbtn_1lbl -side left -anchor nw -padx 4 -pady 8
+	SetCursorHelp $cbtn_1lbl " Include inner nodes color. "
+	
+	set cbtn_1 [hwtk::colorbutton $entitylf1.cbtn_1 -color 4 \
+	            -help "Color of the inner nodes" \
+	            -command "::ReviewTools::SetColor clr_1 %I %H {%R}"]
+	pack $cbtn_1 -side left -anchor center -padx 4 -pady 4
+	
+	set cbtn_2lbl [hwtk::label $entitylf1.cbtn_2lbl -text "Frontier inner nodes color: " -width 20]
+	pack $cbtn_2lbl -side left -anchor nw -padx 4 -pady 8
+	SetCursorHelp $cbtn_2lbl " Include outter nodes color. "
+	
+	set cbtn_2 [hwtk::colorbutton $entitylf1.cbtn_2 -color 6 \
+	            -help "Color of the frontier inner nodes" \
+	            -command "::ReviewTools::SetColor clr_2 %I %H {%R}"]
+	pack $cbtn_2 -side left -anchor center -padx 4 -pady 4
+	
+	set cbtn_3lbl [hwtk::label $entitylf1.cbtn_3lbl -text "Frontier outer nodes color: " -width 20]
+	pack $cbtn_3lbl -side left -anchor nw -padx 4 -pady 8
+	SetCursorHelp $cbtn_3lbl " Include frontier outer nodes color. "
+	
+	set cbtn_3 [hwtk::colorbutton $entitylf1.cbtn_3 -color 3 \
+	            -help "Color of the frontier outer nodes" \
+	            -command "::ReviewTools::SetColor clr_3 %I %H {%R}"]
+	pack $cbtn_3 -side left -anchor center -padx 4 -pady 4
 	
 
 	#-----------------------------------------------------------------------------------------------
@@ -234,7 +277,8 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	$ntbk select $ntbk.f0
 	
 	# Oculta las pestañas del notebook
-	$ntbk hide $ntbk.f1
+	#$ntbk hide $ntbk.f0
+	#$ntbk hide $ntbk.f1
 	$ntbk hide $ntbk.f2
 	
 	
@@ -379,6 +423,48 @@ proc ::ReviewTools::update_range { widget } {
 
 
 # ##############################################################################
+# Procedimiento para la selecion de nodos	
+proc ::ReviewTools::incSelector { args } {
+    variable include
+	 
+    set var [lindex $args 0]
+	
+    switch [lindex $args 1] {
+          "getadvselmethods" {
+		       set include []
+               # Create a HM panel to select the include.
+               *clearmark include 1;
+               wm withdraw .reviewToolsGUI;
+               
+               if { [ catch {*createentitypanel include 1 "Select an include...";} ] } {
+                    wm deiconify .reviewToolsGUI;
+                    return;
+               }
+               set include [hm_info lastselectedentity includes]
+               if {$include != 0} {
+                   set ::ReviewTools::$var $include
+               }
+               wm deiconify .reviewToolsGUI;
+               *clearmark includes 1;
+               set count [llength [set ::ReviewTools::$var]];
+               if { $count == 0 } {               
+                    tk_messageBox -message "No include was selected. \n Please select an include." -title "Altair HyperMesh"
+               }
+               return;
+          }
+          "reset" {
+               set ::ReviewTools::$var []
+               set include []		   
+               return;
+          }
+          default {
+               return 1;         
+          }
+    }
+}
+
+
+# ##############################################################################
 # Procedimiento para recuperar los inputs
 proc ::ReviewTools::processBttn {} { 
 
@@ -447,7 +533,32 @@ proc ::ReviewTools::processBttn {} {
 			
 		}
 		1 {
-            puts "tab index: $ntbk_indx"	
+            puts "tab index: $ntbk_indx"
+			
+			variable include
+	        variable clr_1
+	        variable clr_2
+			variable clr_3
+			
+			if { ([string length $include] == 0) || (![string is integer -strict $include]) || ($include < 0) } {
+		        tk_messageBox -title "Review Tools" -message "  No valid include selected. \n  Please choose a include to review its inner and outter nodes.  " -parent .reviewToolsGUI
+                return
+	        }
+			if { ([string length $clr_1] == 0) || (![string is integer -strict $clr_1]) || ($clr_2 < 0) } {
+		        tk_messageBox -title "Review Tools" -message "  No valid color value. \n  Please choose a valid color for the include inner nodes review.  " -parent .reviewToolsGUI
+                return
+	        }
+			if { ([string length $clr_1] == 0) || (![string is integer -strict $clr_2]) || ($clr_2 < 0) } {
+		        tk_messageBox -title "Review Tools" -message "  No valid color value. \n  Please choose a valid color for the include frontier inner nodes review.  " -parent .reviewToolsGUI
+                return
+	        }
+			if { ([string length $clr_3] == 0) || (![string is integer -strict $clr_3]) || ($clr_3 < 0) } {
+		        tk_messageBox -title "Review Tools" -message "  No valid color value. \n  Please choose a valid color for the include frontier outer nodes review.  " -parent .reviewToolsGUI
+                return
+	        }				
+			
+            # Se lanza el metodo para mostrar entidades por rango
+			::ReviewTools::IncludeReview $include $clr_1 $clr_2 $clr_3
 
             return			
 		}
@@ -513,13 +624,13 @@ proc ::ReviewTools::clearVar {} {
 
 # ##############################################################################
 # Proceso para establecer el color
-proc ::ReviewTools::SetColor { i color rgb } {
+proc ::ReviewTools::SetColor { var i color rgb } {
     
-	variable clr
+	#puts $var
 	#puts $i
-	#puts $Color
+	#puts $color
 	#puts $rgb
-	set clr $i
+	set ::ReviewTools::$var $i
 	return
 
 }
@@ -589,6 +700,67 @@ proc ::ReviewTools::RangeReview { type lower_bound upper_bound color} {
 		*clearmark $type 1
 	}
 
+    return
+	
+}
+
+
+# ##############################################################################
+# Procedimiento para review de nodos de include
+proc ::ReviewTools::IncludeReview { include clr_1 clr_2 clr_3 } {
+
+	puts $include
+	puts $clr_1
+	puts $clr_2
+	puts $clr_3
+	
+	
+	
+	set include 0
+	puts $include
+	
+	
+	
+	
+	
+	# Se guarda la lista de todos los nodos del include
+	eval *createmark nodes 1 "by include" $include
+	set include_nodes [ hm_getmark nodes 1]
+	if { [llength $include_nodes] == 0 } { 
+	puts "aaa"
+		*createmark nodes 1 "by include shortname" "Master Model"
+		set include_nodes [ hm_getmark nodes 1]
+    }
+	*clearmark nodes 1
+	puts "include_nodes: [llength $include_nodes]"
+	
+	# Se guarda la lista de todos los nodos del modelo
+	*createmark nodes 2 "all"
+	set all_nodes [ hm_getmark nodes 2 ]
+	*clearmark nodes 2
+	
+	# Se guarda la lista de todos los nodos de los componentes del include
+	eval *createmark comp 1 "by include" $include
+	set comp_list [ hm_getmark comp 1 ]
+	if { [llength $comp_list] == 0 } { 
+		puts "bbb"
+		*createmark comp 1 "by include shortname" "Master Model"
+		set comp_list [ hm_getmark comp 1]
+		
+    }
+	eval *createmark nodes 1 "by comp" $comp_list
+	set comp_nodes_list [ hm_getmark nodes 1 ]
+	
+	puts "comp_list: $comp_list"
+	puts "comp_nodes_list: [llength  $comp_nodes_list]"
+	
+	
+	
+	
+	
+	
+	
+			
     return
 	
 }
