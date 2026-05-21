@@ -42,9 +42,14 @@ namespace eval ::ReviewTools {
 	set includelist_ [hm_getincludes -byshortname]
 	variable includelist [linsert $includelist_  0 {Master Model}]
 	variable includeoption {Master Model}
+	variable nodeoptions "opt1 opt2 opt3 opt4 opt5"
+	variable nodeoption "opt1"
 	variable clr_1 4
 	variable clr_2 6
-	variable clr_3 3
+	variable clr_3 8
+    variable clr_4 49
+    variable clr_5 3
+	
 }
 
 
@@ -229,57 +234,139 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 			-values $includelist ]
 	#pack $cbinc -side left -anchor nw -padx 4 -pady 8
 	#SetCursorHelp $cbinc " Select an include from the list to review its nodes. "
-	grid $inclbl  $cbinc -padx 8 -pady 8 -sticky nw
+	grid $inclbl  $cbinc -padx 4 -pady 4 -sticky nw
 	SetCursorHelp $inclbl " Select an include from the list to review its nodes. "
 	SetCursorHelp $cbinc " Select an include from the list to review its nodes. "
+	
+
+	#-----------------------------------------------------------------------------------------------
+	
 	
 	set entitylf1_fr2 [hwtk::frame $entitylf1.entitylf1_fr2]
 	pack $entitylf1_fr2 -side top -anchor nw -padx 4 -pady 8
 
-	set cbtn_1lbl [hwtk::label $entitylf1_fr2.cbtn_1lbl -text "Inner nodes color: " -width 20]
+	#set cbtn_1lbl [hwtk::label $entitylf1_fr2.cbtn_1lbl -text " Include nodes color: " -width 20]
 	#pack $cbtn_1lbl -side left -anchor nw -padx 4 -pady 8
-	#SetCursorHelp $cbtn_1lbl " Include inner nodes color. "
+	#SetCursorHelp $cbtn_1lbl " Include nodes color. "
 	
 	set cbtn_1 [hwtk::colorbutton $entitylf1_fr2.cbtn_1 -color 4 \
-	            -help "Color of the inner nodes" \
+	            -help "Color of the include nodes" \
 	            -command "::ReviewTools::SetColor clr_1 %I %H {%R}"]
 	#pack $cbtn_1 -side left -anchor center -padx 4 -pady 4
-	#SetCursorHelp $cbtn_1 " Include inner nodes color. "
-	grid $cbtn_1lbl $cbtn_1 -padx 8 -pady 8 -sticky nw
-	SetCursorHelp $cbtn_1lbl " Include inner nodes color. "
-	SetCursorHelp $cbtn_1 " Include inner nodes color. "
+	#SetCursorHelp $cbtn_1 " Include nodes color. "
+	
+    set rbtn_1 [hwtk::radiobutton $entitylf1_fr2.rbtn_1 -text " Include nodes color: " -variable ::ReviewTools::nodeoption \
+        -value "opt1" \
+		-command "set ::ReviewTools::nodeoption opt1" \
+        -help " Include nodes color. "]
+	
+	grid $rbtn_1 $cbtn_1 -padx 4 -pady 4 -sticky nw
+	#SetCursorHelp $cbtn_1lbl " Include nodes color. "
+	SetCursorHelp $cbtn_1 " Include nodes color. "
+	
+
+	#-----------------------------------------------------------------------------------------------
+	
 	
 	set entitylf1_fr3 [hwtk::frame $entitylf1.entitylf1_fr3]
 	pack $entitylf1_fr3 -side top -anchor nw -padx 4 -pady 8
 	
-	set cbtn_2lbl [hwtk::label $entitylf1_fr3.cbtn_2lbl -text "Frontier inner nodes color: " -width 20]
+	#set cbtn_2lbl [hwtk::label $entitylf1_fr3.cbtn_2lbl -text " Include inner nodes color: " -width 20]
 	#pack $cbtn_2lbl -side left -anchor nw -padx 4 -pady 8
-	#SetCursorHelp $cbtn_2lbl " Include outter nodes color. "
+	#SetCursorHelp $cbtn_2lbl " Include inner nodes color. "
 	
 	set cbtn_2 [hwtk::colorbutton $entitylf1_fr3.cbtn_2 -color 6 \
-	            -help "Color of the frontier inner nodes" \
+	            -help "Color of the inner nodes" \
 	            -command "::ReviewTools::SetColor clr_2 %I %H {%R}"]
 	#pack $cbtn_2 -side left -anchor center -padx 4 -pady 4
-	#SetCursorHelp $cbtn_2 " Include frontier inner nodes color. "
-	grid $cbtn_2lbl $cbtn_2 -padx 8 -pady 8 -sticky nw
-	SetCursorHelp $cbtn_2lbl " Include outter nodes color. "
-	SetCursorHelp $cbtn_2 " Include outter nodes color. "
+	#SetCursorHelp $cbtn_2 " Include inner nodes color. "
+	
+    set rbtn_2 [hwtk::radiobutton $entitylf1_fr3.rbtn_2 -text " Include inner nodes color: " -variable ::ReviewTools::nodeoption \
+        -value "opt2" \
+		-command "set ::ReviewTools::nodeoption opt2" \
+        -help " Include inner nodes color. "]
+		
+	grid $rbtn_2 $cbtn_2 -padx 4 -pady 4 -sticky nw
+	#SetCursorHelp $cbtn_2lbl " Include inner nodes color. "
+	SetCursorHelp $cbtn_2 " Include inner nodes color. "
+	
+
+	#-----------------------------------------------------------------------------------------------
+	
 	
 	set entitylf1_fr4 [hwtk::frame $entitylf1.entitylf1_fr4]
 	pack $entitylf1_fr4 -side top -anchor nw -padx 4 -pady 8
 	
-	set cbtn_3lbl [hwtk::label $entitylf1_fr4.cbtn_3lbl -text "Frontier outer nodes color: " -width 20]
+	#set cbtn_3lbl [hwtk::label $entitylf1_fr4.cbtn_3lbl -text " Include frontier nodes color: " -width 20]
 	#pack $cbtn_3lbl -side left -anchor nw -padx 4 -pady 8
-	#SetCursorHelp $cbtn_3lbl " Include frontier outer nodes color. "
+	#SetCursorHelp $cbtn_3lbl " Include frontier nodes color. "
 	
-	set cbtn_3 [hwtk::colorbutton $entitylf1_fr4.cbtn_3 -color 3 \
-	            -help "Color of the frontier outer nodes" \
+	set cbtn_3 [hwtk::colorbutton $entitylf1_fr4.cbtn_3 -color 8 \
+	            -help "Color of the frontier nodes" \
 	            -command "::ReviewTools::SetColor clr_3 %I %H {%R}"]
 	#pack $cbtn_3 -side left -anchor center -padx 4 -pady 4
-	#SetCursorHelp $cbtn_3 " Include frontier outer nodes color. "
-	grid $cbtn_3lbl $cbtn_3 -padx 8 -pady 8 -sticky nw
-	SetCursorHelp $cbtn_3lbl " Include frontier outer nodes color. "
-	SetCursorHelp $cbtn_3 " Include frontier outer nodes color. "
+	#SetCursorHelp $cbtn_3 " Include frontier nodes color. "
+	
+    set rbtn_3 [hwtk::radiobutton $entitylf1_fr4.rbtn_3 -text " Include frontier nodes color: " -variable ::ReviewTools::nodeoption \
+        -value "opt3" \
+		-command "set ::ReviewTools::nodeoption opt3" \
+        -help " Include frontier nodes color. "]
+	
+	grid $rbtn_3 $cbtn_3 -padx 4 -pady 4 -sticky nw
+	#SetCursorHelp $cbtn_3lbl " Include frontier nodes color. "
+	SetCursorHelp $cbtn_3 " Include frontier nodes color. "
+
+
+	#-----------------------------------------------------------------------------------------------
+	
+	
+	set entitylf1_fr5 [hwtk::frame $entitylf1.entitylf1_fr5]
+	pack $entitylf1_fr5 -side top -anchor nw -padx 4 -pady 8
+	
+	#set cbtn_4lbl [hwtk::label $entitylf1_fr5.cbtn_4lbl -text " Frontier inner nodes color: " -width 20]
+	#pack $cbtn_4lbl -side left -anchor nw -padx 4 -pady 8
+	#SetCursorHelp $cbtn_4lbl " Include frontier inner nodes color. "
+	
+	set cbtn_4 [hwtk::colorbutton $entitylf1_fr5.cbtn_4 -color 49 \
+	            -help "Color of the frontier inner nodes" \
+	            -command "::ReviewTools::SetColor clr_4 %I %H {%R}"]
+	#pack $cbtn_4 -side left -anchor center -padx 4 -pady 4
+	#SetCursorHelp $cbtn_4 " Include frontier inner nodes color. "
+	
+    set rbtn_4 [hwtk::radiobutton $entitylf1_fr5.rbtn_4 -text " Frontier inner nodes color: " -variable ::ReviewTools::nodeoption \
+        -value "opt4" \
+		-command "set ::ReviewTools::nodeoption opt4" \
+        -help " Include frontier inner nodes color. "]
+	
+	grid $rbtn_4 $cbtn_4 -padx 4 -pady 4 -sticky nw
+	#SetCursorHelp $cbtn_3lbl " Include frontier inner nodes color. "
+	SetCursorHelp $cbtn_3 " Include frontier inner nodes color. "
+
+
+	#-----------------------------------------------------------------------------------------------
+	
+	
+	set entitylf1_fr6 [hwtk::frame $entitylf1.entitylf1_fr6]
+	pack $entitylf1_fr6 -side top -anchor nw -padx 4 -pady 8	
+	
+	#set cbtn_5lbl [hwtk::label $entitylf1_fr6.cbtn_5lbl -text " Frontier outer nodes color: " -width 20]
+	#pack $cbtn_5lbl -side left -anchor nw -padx 4 -pady 8
+	#SetCursorHelp $cbtn_5lbl " Include frontier outer nodes color. "
+	
+	set cbtn_5 [hwtk::colorbutton $entitylf1_fr6.cbtn_5 -color 3 \
+	            -help "Color of the frontier outer nodes" \
+	            -command "::ReviewTools::SetColor clr_5 %I %H {%R}"]
+	#pack $cbtn_5 -side left -anchor center -padx 4 -pady 4
+	#SetCursorHelp $cbtn_5 " Include frontier outer nodes color. "
+	
+    set rbtn_5 [hwtk::radiobutton $entitylf1_fr6.rbtn_5 -text " Frontier outer nodes color: " -variable ::ReviewTools::nodeoption \
+        -value "opt5" \
+		-command "set ::ReviewTools::nodeoption opt5" \
+        -help " Include frontier outer nodes color. "]
+	
+	grid $rbtn_5 $cbtn_5 -padx 4 -pady 4 -sticky nw
+	#SetCursorHelp $cbtn_5lbl " Include frontier outer nodes color. "
+	SetCursorHelp $cbtn_5 " Include frontier outer nodes color. "
 	
 
 	#-----------------------------------------------------------------------------------------------
@@ -562,33 +649,51 @@ proc ::ReviewTools::processBttn {} {
 			
 		}
 		1 {
-            puts "tab index: $ntbk_indx"
+            #puts "tab index: $ntbk_indx"
 			
 			variable includelist
 			variable includeoption
+	        variable nodeoptions
+	        variable nodeoption
 	        variable clr_1
 	        variable clr_2
 			variable clr_3
-	
+            variable clr_4
+            variable clr_5		
+			
+			
 	        if {[lsearch -exact $includelist $includeoption] < 0} {
 		        tk_messageBox -title "Review Tools" -message "  No valid include selected. \n  Please choose an include from the list to review.  " -parent .reviewToolsGUI
                 return
 	        }	
+	        if {[lsearch -exact $nodeoptions $nodeoption] < 0} {
+		        tk_messageBox -title "Review Tools" -message "  No valid entity type selected. \n  Please choose a valid entity type to review.  " -parent .reviewToolsGUI
+                return
+	        }	
 			if { ([string length $clr_1] == 0) || (![string is integer -strict $clr_1]) || ($clr_2 < 0) } {
+		        tk_messageBox -title "Review Tools" -message "  No valid color value. \n  Please choose a valid color for the include nodes review.  " -parent .reviewToolsGUI
+                return
+	        }
+			if { ([string length $clr_2] == 0) || (![string is integer -strict $clr_2]) || ($clr_2 < 0) } {
 		        tk_messageBox -title "Review Tools" -message "  No valid color value. \n  Please choose a valid color for the include inner nodes review.  " -parent .reviewToolsGUI
                 return
 	        }
-			if { ([string length $clr_1] == 0) || (![string is integer -strict $clr_2]) || ($clr_2 < 0) } {
-		        tk_messageBox -title "Review Tools" -message "  No valid color value. \n  Please choose a valid color for the include frontier inner nodes review.  " -parent .reviewToolsGUI
+			if { ([string length $clr_3] == 0) || (![string is integer -strict $clr_3]) || ($clr_3 < 0) } {
+		        tk_messageBox -title "Review Tools" -message "  No valid color value. \n  Please choose a valid color for the include frontier nodes review.  " -parent .reviewToolsGUI
                 return
 	        }
-			if { ([string length $clr_3] == 0) || (![string is integer -strict $clr_3]) || ($clr_3 < 0) } {
+			if { ([string length $clr_4] == 0) || (![string is integer -strict $clr_4]) || ($clr_4 < 0) } {
+		        tk_messageBox -title "Review Tools" -message "  No valid color value. \n  Please choose a valid color for the include frontier inner nodes review.  " -parent .reviewToolsGUI
+                return
+	        }	
+			if { ([string length $clr_5] == 0) || (![string is integer -strict $clr_5]) || ($clr_5 < 0) } {
 		        tk_messageBox -title "Review Tools" -message "  No valid color value. \n  Please choose a valid color for the include frontier outer nodes review.  " -parent .reviewToolsGUI
                 return
 	        }				
 			
+			
             # Se lanza el metodo para mostrar entidades por rango
-			::ReviewTools::IncludeReview $includeoption $clr_1 $clr_2 $clr_3
+			::ReviewTools::IncludeReview $includeoption $nodeoption $clr_1 $clr_2 $clr_3 $clr_4 $clr_5
 
             return			
 		}
@@ -737,12 +842,18 @@ proc ::ReviewTools::RangeReview { type lower_bound upper_bound color} {
 
 # ##############################################################################
 # Procedimiento para review de nodos de include
-proc ::ReviewTools::IncludeReview { include clr_1 clr_2 clr_3 } {
+proc ::ReviewTools::IncludeReview { include opt clr_1 clr_2 clr_3 clr_4 clr_5 } {
 
 	puts $include
+	puts $opt
 	puts $clr_1
 	puts $clr_2
 	puts $clr_3
+    puts $clr_4
+    puts $clr_5
+	
+	set color ""
+	set node_list ""
 	
 	
 	
@@ -757,21 +868,141 @@ proc ::ReviewTools::IncludeReview { include clr_1 clr_2 clr_3 } {
 	set all_nodes [ hm_getmark nodes 2 ]
 	*clearmark nodes 2
 	
+	# Se guarda la lista de los nodos fuera del Include
+	# Son los nodos que no se encuentran en el include
+	eval *createmark nodes 1 $all_nodes
+	eval *createmark nodes 2 $include_nodes
+	*markdifference nodes 1 nodes 2
+	set no_include_nodes [ hm_getmark nodes 1 ]
+	*clearmark nodes 1
+	*clearmark nodes 2	
+	
 	# Se guarda la lista de todos los nodos de los componentes del include
 	*createmark comp 1 "by include shortname" $include
 	set comp_list [ hm_getmark comp 1 ]
 	eval *createmark nodes 1 "by comp" $comp_list
 	set comp_nodes_list [ hm_getmark nodes 1 ]
-	
+	*clearmark comp 1
 	puts "comp_list: $comp_list"
 	puts "comp_nodes_list: [llength  $comp_nodes_list]"
 	
+	# Se guarda la lista de los nodos de los componentes fuera del include
+	*createmark comp 1 "all"
+	*createmark comp 2 $comp_list
+	*markdifference comp 1 comp 2
+	set comp_out_list [ hm_getmark comp 1 ]
+	eval *createmark nodes 1 "by comp" $comp_out_list
+	set comp_out_nodes_list [ hm_getmark nodes 1 ]
+	*clearmark comp 1
+	puts "comp_out_list: $comp_out_list"
+	puts "comp_out_nodes_list: [llength  $comp_out_nodes_list]"
 	
 	
 	
 	
 	
+	# Se guarda la lista de los nodos inner
+	# Son los nodos de los componentes del include que se encuentran dentro del include
+	eval *createmark nodes 1 $include_nodes
+	eval *createmark nodes 2 $comp_nodes_list
+	*markintersection nodes 1 nodes 2
+	set inner_nodes [ hm_getmark nodes 1 ]	
+	*clearmark nodes 1
+	*clearmark nodes 2
+	puts "inner_nodes: $inner_nodes"
+	puts "inner_nodes: [llength  $inner_nodes]"
 	
+	# Se guarda la lista de los nodos outer
+	# Son los nodos de los componentes del include que se encuentran dentro del include
+	eval *createmark nodes 1 $all_nodes
+	eval *createmark nodes 2 $inner_nodes
+	*marknotintersection nodes 1 nodes 2
+	set outer_nodes [ hm_getmark nodes 1 ]	
+	*clearmark nodes 1
+	*clearmark nodes 2
+	puts "outer_nodes: $outer_nodes"
+	puts "outer_nodes: [llength  $outer_nodes]"
+	
+	# Se guarda la lista de nodos frontera interna
+	# Son los nodos de los componentes fuera del include que se encuentran en el include
+	eval *createmark nodes 1 $comp_out_nodes_list
+	eval *createmark nodes 2 $include_nodes	
+	*markintersection nodes 1 nodes 2
+	set inner_frontier_nodes [ hm_getmark nodes 1 ]
+	*clearmark nodes 1
+	*clearmark nodes 2
+	puts "inner_frontier_nodes: $inner_frontier_nodes"
+	puts "inner_frontier_nodes: [llength  $inner_frontier_nodes]"
+	
+	# Se guarda la lista de nodos frontera externa
+	# Son los nodos de los componetes del include que se encuentran fuera del include
+	eval *createmark nodes 1 $comp_nodes_list
+	eval *createmark nodes 2 $no_include_nodes	
+	*markintersection nodes 1 nodes 2
+	set outer_frontier_nodes [ hm_getmark nodes 1 ]
+	*clearmark nodes 1
+	*clearmark nodes 2
+	puts "outer_frontier_nodes: $outer_frontier_nodes"
+	puts "outer_frontier_nodes: [llength  $outer_frontier_nodes]"
+	
+	# Se guarda la lista de los nodos frontera
+	# Son los nodos frontera inner y outer
+
+    if { ([llength $inner_frontier_nodes] > 0) && ([llength $outer_frontier_nodes] > 0) } {
+	    puts "AAA1"
+	    eval *createmark nodes 1 $inner_frontier_nodes
+		foreach item $outer_frontier_nodes {
+	        *appendmark nodes 1 "by id" $item
+        }			
+	} elseif { ([llength $inner_frontier_nodes] > 0) } {
+	    puts "AAA2"
+	    eval *createmark nodes 1 $inner_frontier_nodes
+	} elseif { ([llength $outer_frontier_nodes] > 0) } {
+	    puts "AAA3"
+	    eval *createmark nodes 1 $outer_frontier_nodes
+	} else {
+	    puts "AAA4"
+	    eval *createmark nodes 1 $inner_frontier_nodes
+	}
+
+	set frontier_nodes [ hm_getmark nodes 1 ]
+	*clearmark nodes 1
+	*clearmark nodes 2
+	puts "frontier_nodes: $frontier_nodes"
+	puts "frontier_nodes: [llength  $frontier_nodes]"
+	
+	
+	
+	
+	switch $opt {
+	    "opt1" {
+		    set node_list $include_nodes
+		    set color $clr_1
+		}
+	    "opt2" {
+		    set node_list $inner_nodes
+		    set color $clr_2
+		}
+	    "opt3" {
+		    set node_list $frontier_nodes
+		    set color $clr_3
+		}
+	    "opt4" {
+		    set node_list $inner_frontier_nodes
+		    set color $clr_4
+		}
+	    "opt5" {
+		    set node_list $outer_frontier_nodes
+		    set color $clr_5
+		}
+	}
+	
+
+    eval *createmark nodes 1 $node_list
+    *createmark nodes 2 0-0
+    eval *reviewtwomark 1 2 $color 1
+	*clearmark nodes 1
+	*clearmark nodes 2
 			
     return
 	
