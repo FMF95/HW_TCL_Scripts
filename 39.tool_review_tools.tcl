@@ -950,10 +950,8 @@ proc ::ReviewTools::IncludeReview { include opt clr_1 clr_2 clr_3 clr_4 clr_5 } 
 
     if { ([llength $inner_frontier_nodes] > 0) && ([llength $outer_frontier_nodes] > 0) } {
 	    puts "AAA1"
-	    eval *createmark nodes 1 $inner_frontier_nodes
-		foreach item $outer_frontier_nodes {
-	        *appendmark nodes 1 "by id" $item
-        }			
+		set combined_lists [concat $inner_frontier_nodes $outer_frontier_nodes]
+	    eval *createmark nodes 1 $combined_lists
 	} elseif { ([llength $inner_frontier_nodes] > 0) } {
 	    puts "AAA2"
 	    eval *createmark nodes 1 $inner_frontier_nodes
