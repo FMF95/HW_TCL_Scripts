@@ -44,12 +44,21 @@ namespace eval ::ReviewTools {
 	variable includeoption {Master Model}
 	variable nodeoptions "opt1 opt2 opt3 opt4 opt5"
 	variable nodeoption "opt1"
+	variable include_nodes {}
+	variable inner_nodes {}
+	variable frontier_nodes {}
+	variable inner_frontier_nodes {}
+	variable outer_frontier_nodes {}
+	variable len_include_nodes [llength $include_nodes]
+	variable len_inner_nodes [llength $inner_nodes]
+	variable len_frontier_nodes [llength $frontier_nodes]
+	variable len_inner_frontier_nodes [llength $inner_frontier_nodes]
+	variable len_outer_frontier_nodes [llength $outer_frontier_nodes]
 	variable clr_1 4
 	variable clr_2 6
 	variable clr_3 8
     variable clr_4 49
     variable clr_5 3
-	
 }
 
 
@@ -231,13 +240,17 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	        -textvariable ::ReviewTools::includeoption \
 			-state readonly \
 			-width 30 \
-			-values $includelist ]
+			-values $includelist \
+            -selcommand "::ReviewTools::IncludeNodes %v"]
 	#pack $cbinc -side left -anchor nw -padx 4 -pady 8
 	#SetCursorHelp $cbinc " Select an include from the list to review its nodes. "
 	grid $inclbl  $cbinc -padx 4 -pady 4 -sticky nw
 	SetCursorHelp $inclbl " Select an include from the list to review its nodes. "
 	SetCursorHelp $cbinc " Select an include from the list to review its nodes. "
 	
+	#Se inicializa
+	::ReviewTools::IncludeNodes includeoption
+
 
 	#-----------------------------------------------------------------------------------------------
 	
@@ -255,12 +268,14 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	#pack $cbtn_1 -side left -anchor center -padx 4 -pady 4
 	#SetCursorHelp $cbtn_1 " Include nodes color. "
 	
-    set rbtn_1 [hwtk::radiobutton $entitylf1_fr2.rbtn_1 -text " Include nodes color: " -variable ::ReviewTools::nodeoption \
+    set rbtn_1 [hwtk::radiobutton $entitylf1_fr2.rbtn_1 -text " Include nodes: " -variable ::ReviewTools::nodeoption \
         -value "opt1" \
 		-command "set ::ReviewTools::nodeoption opt1" \
         -help " Include nodes color. "]
+		
+	set de_1 [hwtk::entry $entitylf1_fr2.de_1 -state disabled -textvariable ::ReviewTools::len_include_nodes]
 	
-	grid $rbtn_1 $cbtn_1 -padx 4 -pady 4 -sticky nw
+	grid $cbtn_1 $rbtn_1 $de_1 -padx 4 -pady 4 -sticky nw
 	#SetCursorHelp $cbtn_1lbl " Include nodes color. "
 	SetCursorHelp $cbtn_1 " Include nodes color. "
 	
@@ -281,12 +296,14 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	#pack $cbtn_2 -side left -anchor center -padx 4 -pady 4
 	#SetCursorHelp $cbtn_2 " Include inner nodes color. "
 	
-    set rbtn_2 [hwtk::radiobutton $entitylf1_fr3.rbtn_2 -text " Include inner nodes color: " -variable ::ReviewTools::nodeoption \
+    set rbtn_2 [hwtk::radiobutton $entitylf1_fr3.rbtn_2 -text " Include inner nodes: " -variable ::ReviewTools::nodeoption \
         -value "opt2" \
 		-command "set ::ReviewTools::nodeoption opt2" \
         -help " Include inner nodes color. "]
-		
-	grid $rbtn_2 $cbtn_2 -padx 4 -pady 4 -sticky nw
+
+	set de_2 [hwtk::entry $entitylf1_fr3.de_2 -state disabled -textvariable ::ReviewTools::len_inner_nodes]
+	
+	grid $cbtn_2 $rbtn_2 $de_2 -padx 4 -pady 4 -sticky nw
 	#SetCursorHelp $cbtn_2lbl " Include inner nodes color. "
 	SetCursorHelp $cbtn_2 " Include inner nodes color. "
 	
@@ -307,12 +324,14 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	#pack $cbtn_3 -side left -anchor center -padx 4 -pady 4
 	#SetCursorHelp $cbtn_3 " Include frontier nodes color. "
 	
-    set rbtn_3 [hwtk::radiobutton $entitylf1_fr4.rbtn_3 -text " Include frontier nodes color: " -variable ::ReviewTools::nodeoption \
+    set rbtn_3 [hwtk::radiobutton $entitylf1_fr4.rbtn_3 -text " Include frontier nodes: " -variable ::ReviewTools::nodeoption \
         -value "opt3" \
 		-command "set ::ReviewTools::nodeoption opt3" \
         -help " Include frontier nodes color. "]
+		
+    set de_3 [hwtk::entry $entitylf1_fr4.de_3 -state disabled -textvariable ::ReviewTools::len_frontier_nodes]
 	
-	grid $rbtn_3 $cbtn_3 -padx 4 -pady 4 -sticky nw
+	grid $cbtn_3 $rbtn_3 $de_3 -padx 4 -pady 4 -sticky nw
 	#SetCursorHelp $cbtn_3lbl " Include frontier nodes color. "
 	SetCursorHelp $cbtn_3 " Include frontier nodes color. "
 
@@ -333,14 +352,16 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	#pack $cbtn_4 -side left -anchor center -padx 4 -pady 4
 	#SetCursorHelp $cbtn_4 " Include frontier inner nodes color. "
 	
-    set rbtn_4 [hwtk::radiobutton $entitylf1_fr5.rbtn_4 -text " Frontier inner nodes color: " -variable ::ReviewTools::nodeoption \
+    set rbtn_4 [hwtk::radiobutton $entitylf1_fr5.rbtn_4 -text " Frontier inner nodes: " -variable ::ReviewTools::nodeoption \
         -value "opt4" \
 		-command "set ::ReviewTools::nodeoption opt4" \
         -help " Include frontier inner nodes color. "]
+		
+    set de_4 [hwtk::entry $entitylf1_fr5.de_4 -state disabled -textvariable ::ReviewTools::len_inner_frontier_nodes]
 	
-	grid $rbtn_4 $cbtn_4 -padx 4 -pady 4 -sticky nw
+	grid $cbtn_4 $rbtn_4 $de_4 -padx 4 -pady 4 -sticky nw
 	#SetCursorHelp $cbtn_3lbl " Include frontier inner nodes color. "
-	SetCursorHelp $cbtn_3 " Include frontier inner nodes color. "
+	SetCursorHelp $cbtn_4 " Include frontier inner nodes color. "
 
 
 	#-----------------------------------------------------------------------------------------------
@@ -359,12 +380,14 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	#pack $cbtn_5 -side left -anchor center -padx 4 -pady 4
 	#SetCursorHelp $cbtn_5 " Include frontier outer nodes color. "
 	
-    set rbtn_5 [hwtk::radiobutton $entitylf1_fr6.rbtn_5 -text " Frontier outer nodes color: " -variable ::ReviewTools::nodeoption \
+    set rbtn_5 [hwtk::radiobutton $entitylf1_fr6.rbtn_5 -text " Frontier outer nodes: " -variable ::ReviewTools::nodeoption \
         -value "opt5" \
 		-command "set ::ReviewTools::nodeoption opt5" \
         -help " Include frontier outer nodes color. "]
+		
+    set de_5 [hwtk::entry $entitylf1_fr6.de_5 -state disabled -textvariable ::ReviewTools::len_outer_frontier_nodes]
 	
-	grid $rbtn_5 $cbtn_5 -padx 4 -pady 4 -sticky nw
+	grid $cbtn_5 $rbtn_5 $de_5 -padx 4 -pady 4 -sticky nw
 	#SetCursorHelp $cbtn_5lbl " Include frontier outer nodes color. "
 	SetCursorHelp $cbtn_5 " Include frontier outer nodes color. "
 	
@@ -693,7 +716,7 @@ proc ::ReviewTools::processBttn {} {
 			
 			
             # Se lanza el metodo para mostrar entidades por rango
-			::ReviewTools::IncludeReview $includeoption $nodeoption $clr_1 $clr_2 $clr_3 $clr_4 $clr_5
+			::ReviewTools::IncludeReview $nodeoption $clr_1 $clr_2 $clr_3 $clr_4 $clr_5
 
             return			
 		}
@@ -842,19 +865,21 @@ proc ::ReviewTools::RangeReview { type lower_bound upper_bound color} {
 
 # ##############################################################################
 # Procedimiento para review de nodos de include
-proc ::ReviewTools::IncludeReview { include opt clr_1 clr_2 clr_3 clr_4 clr_5 } {
+proc ::ReviewTools::IncludeNodes { include } {
+
+	variable include_nodes
+	variable inner_nodes
+	variable frontier_nodes
+	variable inner_frontier_nodes
+	variable outer_frontier_nodes
+	
+	variable len_include_nodes
+	variable len_inner_nodes
+	variable len_frontier_nodes
+	variable len_inner_frontier_nodes
+	variable len_outer_frontier_nodes
 
 	puts $include
-	puts $opt
-	puts $clr_1
-	puts $clr_2
-	puts $clr_3
-    puts $clr_4
-    puts $clr_5
-	
-	set color ""
-	set node_list ""
-	
 	
 	
 	# Se guarda la lista de todos los nodos del include
@@ -970,7 +995,35 @@ proc ::ReviewTools::IncludeReview { include opt clr_1 clr_2 clr_3 clr_4 clr_5 } 
 	puts "frontier_nodes: [llength  $frontier_nodes]"
 	
 	
+	set len_include_nodes [llength $include_nodes]
+	set len_inner_nodes [llength $inner_nodes]
+	set len_frontier_nodes [llength $frontier_nodes]
+	set len_inner_frontier_nodes [llength $inner_frontier_nodes]
+	set len_outer_frontier_nodes [llength $outer_frontier_nodes]
 	
+	return
+}
+	
+	
+# ##############################################################################
+# Procedimiento para review de nodos de include
+proc ::ReviewTools::IncludeReview { opt clr_1 clr_2 clr_3 clr_4 clr_5 } {
+
+	puts $opt
+	puts $clr_1
+	puts $clr_2
+	puts $clr_3
+    puts $clr_4
+    puts $clr_5
+	
+	variable include_nodes
+	variable inner_nodes
+	variable frontier_nodes
+	variable inner_frontier_nodes
+	variable outer_frontier_nodes
+	
+	set color ""
+	set node_list ""
 	
 	switch $opt {
 	    "opt1" {
