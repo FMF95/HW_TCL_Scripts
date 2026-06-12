@@ -54,11 +54,17 @@ namespace eval ::ReviewTools {
 	variable len_frontier_nodes [llength $frontier_nodes]
 	variable len_inner_frontier_nodes [llength $inner_frontier_nodes]
 	variable len_outer_frontier_nodes [llength $outer_frontier_nodes]
+	variable setname_include_nodes ""
+	variable setname_inner_nodes ""
+	variable setname_frontier_nodes ""
+	variable setname_inner_frontier_nodes ""
+	variable setname_outer_frontier_nodes ""
 	variable clr_1 4
 	variable clr_2 6
 	variable clr_3 8
     variable clr_4 49
     variable clr_5 3
+	
 }
 
 
@@ -268,14 +274,30 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	#pack $cbtn_1 -side left -anchor center -padx 4 -pady 4
 	#SetCursorHelp $cbtn_1 " Include nodes color. "
 	
-    set rbtn_1 [hwtk::radiobutton $entitylf1_fr2.rbtn_1 -text " Include nodes: " -variable ::ReviewTools::nodeoption \
+    set rbtn_1 [hwtk::radiobutton $entitylf1_fr2.rbtn_1 -text "  Include nodes:            " -variable ::ReviewTools::nodeoption \
         -value "opt1" \
 		-command "set ::ReviewTools::nodeoption opt1" \
         -help " Include nodes color. "]
 		
-	set de_1 [hwtk::entry $entitylf1_fr2.de_1 -state disabled -textvariable ::ReviewTools::len_include_nodes]
+	set de_1 [hwtk::entry $entitylf1_fr2.de_1 -state disabled -textvariable ::ReviewTools::len_include_nodes -width 15]
 	
-	grid $cbtn_1 $rbtn_1 $de_1 -padx 4 -pady 4 -sticky nw
+	set setent_1 [hwtk::entry $entitylf1_fr2.setent_1 \
+	    -state normal \
+		-textvariable ::ReviewTools::setname_include_nodes \
+		-width 40 \
+		-help " Name to create a set with the Include nodes. "]
+		
+	set setbttn_1 [hwtk::button $entitylf1_fr2.setbttn_1 -text "Create set" \
+	    -width 10 \
+		-help " Create a set with the Include nodes. " \
+		-command "::ReviewTools::createNodeSet include_nodes"]
+		
+	set markbttn_1 [hwtk::button $entitylf1_fr2.markbttn_1 -text "Save mark" \
+	    -width 10 \
+		-help " Save a mark with the Include nodes. " \
+		-command "::ReviewTools::saveNodeMark include_nodes"]
+	
+	grid $cbtn_1 $rbtn_1 $de_1 $setent_1 $setbttn_1 $markbttn_1 -padx 4 -pady 4 -sticky nw
 	#SetCursorHelp $cbtn_1lbl " Include nodes color. "
 	SetCursorHelp $cbtn_1 " Include nodes color. "
 	
@@ -296,14 +318,30 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	#pack $cbtn_2 -side left -anchor center -padx 4 -pady 4
 	#SetCursorHelp $cbtn_2 " Include inner nodes color. "
 	
-    set rbtn_2 [hwtk::radiobutton $entitylf1_fr3.rbtn_2 -text " Include inner nodes: " -variable ::ReviewTools::nodeoption \
+    set rbtn_2 [hwtk::radiobutton $entitylf1_fr3.rbtn_2 -text "  Include inner nodes:   " -variable ::ReviewTools::nodeoption \
         -value "opt2" \
 		-command "set ::ReviewTools::nodeoption opt2" \
         -help " Include inner nodes color. "]
 
-	set de_2 [hwtk::entry $entitylf1_fr3.de_2 -state disabled -textvariable ::ReviewTools::len_inner_nodes]
+	set de_2 [hwtk::entry $entitylf1_fr3.de_2 -state disabled -textvariable ::ReviewTools::len_inner_nodes -width 15]
 	
-	grid $cbtn_2 $rbtn_2 $de_2 -padx 4 -pady 4 -sticky nw
+	set setent_2 [hwtk::entry $entitylf1_fr3.setent_2 \
+	    -state normal \
+		-textvariable ::ReviewTools::setname_inner_nodes \
+		-width 40 \
+		-help " Name to create a set with the Include inner nodes. "]
+		
+	set setbttn_2 [hwtk::button $entitylf1_fr3.setbttn_2 -text "Create set" \
+	    -width 10 \
+		-help " Create a set with the Include inner nodes. " \
+		-command "::ReviewTools::createNodeSet inner_nodes"]
+		
+	set markbttn_2 [hwtk::button $entitylf1_fr3.markbttn_2 -text "Save mark" \
+	    -width 10 \
+		-help " Save a mark with the Include inner nodes. " \
+		-command "::ReviewTools::saveNodeMark inner_nodes"]
+	
+	grid $cbtn_2 $rbtn_2 $de_2 $setent_2 $setbttn_2 $markbttn_2 -padx 4 -pady 4 -sticky nw
 	#SetCursorHelp $cbtn_2lbl " Include inner nodes color. "
 	SetCursorHelp $cbtn_2 " Include inner nodes color. "
 	
@@ -324,14 +362,30 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	#pack $cbtn_3 -side left -anchor center -padx 4 -pady 4
 	#SetCursorHelp $cbtn_3 " Include frontier nodes color. "
 	
-    set rbtn_3 [hwtk::radiobutton $entitylf1_fr4.rbtn_3 -text " Include frontier nodes: " -variable ::ReviewTools::nodeoption \
+    set rbtn_3 [hwtk::radiobutton $entitylf1_fr4.rbtn_3 -text "  Include frontier nodes:" -variable ::ReviewTools::nodeoption \
         -value "opt3" \
 		-command "set ::ReviewTools::nodeoption opt3" \
         -help " Include frontier nodes color. "]
 		
-    set de_3 [hwtk::entry $entitylf1_fr4.de_3 -state disabled -textvariable ::ReviewTools::len_frontier_nodes]
+    set de_3 [hwtk::entry $entitylf1_fr4.de_3 -state disabled -textvariable ::ReviewTools::len_frontier_nodes -width 15]
 	
-	grid $cbtn_3 $rbtn_3 $de_3 -padx 4 -pady 4 -sticky nw
+	set setent_3 [hwtk::entry $entitylf1_fr4.setent_3 \
+	    -state normal \
+		-textvariable ::ReviewTools::setname_frontier_nodes \
+		-width 40 \
+		-help " Name to create a set with the Include frontier nodes. "]
+		
+	set setbttn_3 [hwtk::button $entitylf1_fr4.setbttn_3 -text "Create set" \
+	    -width 10 \
+		-help " Create a set with the Include frontier nodes. " \
+		-command "::ReviewTools::createNodeSet frontier_nodes"]
+		
+	set markbttn_3 [hwtk::button $entitylf1_fr4.markbttn_3 -text "Save mark" \
+	    -width 10 \
+		-help " Save a mark with the Include frontier nodes. " \
+		-command "::ReviewTools::saveNodeMark frontier_nodes"]
+	
+	grid $cbtn_3 $rbtn_3 $de_3 $setent_3 $setbttn_3 $markbttn_3 -padx 4 -pady 4 -sticky nw
 	#SetCursorHelp $cbtn_3lbl " Include frontier nodes color. "
 	SetCursorHelp $cbtn_3 " Include frontier nodes color. "
 
@@ -352,14 +406,30 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	#pack $cbtn_4 -side left -anchor center -padx 4 -pady 4
 	#SetCursorHelp $cbtn_4 " Include frontier inner nodes color. "
 	
-    set rbtn_4 [hwtk::radiobutton $entitylf1_fr5.rbtn_4 -text " Frontier inner nodes: " -variable ::ReviewTools::nodeoption \
+    set rbtn_4 [hwtk::radiobutton $entitylf1_fr5.rbtn_4 -text "  Frontier inner nodes:  " -variable ::ReviewTools::nodeoption \
         -value "opt4" \
 		-command "set ::ReviewTools::nodeoption opt4" \
         -help " Include frontier inner nodes color. "]
 		
-    set de_4 [hwtk::entry $entitylf1_fr5.de_4 -state disabled -textvariable ::ReviewTools::len_inner_frontier_nodes]
+    set de_4 [hwtk::entry $entitylf1_fr5.de_4 -state disabled -textvariable ::ReviewTools::len_inner_frontier_nodes -width 15]
 	
-	grid $cbtn_4 $rbtn_4 $de_4 -padx 4 -pady 4 -sticky nw
+	set setent_4 [hwtk::entry $entitylf1_fr5.setent_4 \
+	    -state normal \
+		-textvariable ::ReviewTools::setname_inner_frontier_nodes \
+		-width 40 \
+		-help " Name to create a set with the Include frontier inner nodes. "]
+		
+	set setbttn_4 [hwtk::button $entitylf1_fr5.setbttn_4 -text "Create set" \
+	    -width 10 \
+		-help " Create a set with the Include frontier inner nodes. " \
+		-command "::ReviewTools::createNodeSet inner_frontier_nodes"]
+		
+	set markbttn_4 [hwtk::button $entitylf1_fr5.markbttn_4 -text "Save mark" \
+	    -width 10 \
+		-help " Save a mark with the Include frontier inner nodes. " \
+		-command "::ReviewTools::saveNodeMark inner_frontier_nodes"]
+	
+	grid $cbtn_4 $rbtn_4 $de_4 $setent_4 $setbttn_4 $markbttn_4 -padx 4 -pady 4 -sticky nw
 	#SetCursorHelp $cbtn_3lbl " Include frontier inner nodes color. "
 	SetCursorHelp $cbtn_4 " Include frontier inner nodes color. "
 
@@ -380,14 +450,30 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	#pack $cbtn_5 -side left -anchor center -padx 4 -pady 4
 	#SetCursorHelp $cbtn_5 " Include frontier outer nodes color. "
 	
-    set rbtn_5 [hwtk::radiobutton $entitylf1_fr6.rbtn_5 -text " Frontier outer nodes: " -variable ::ReviewTools::nodeoption \
+    set rbtn_5 [hwtk::radiobutton $entitylf1_fr6.rbtn_5 -text "  Frontier outer nodes:  " -variable ::ReviewTools::nodeoption \
         -value "opt5" \
 		-command "set ::ReviewTools::nodeoption opt5" \
         -help " Include frontier outer nodes color. "]
 		
-    set de_5 [hwtk::entry $entitylf1_fr6.de_5 -state disabled -textvariable ::ReviewTools::len_outer_frontier_nodes]
+    set de_5 [hwtk::entry $entitylf1_fr6.de_5 -state disabled -textvariable ::ReviewTools::len_outer_frontier_nodes -width 15]
 	
-	grid $cbtn_5 $rbtn_5 $de_5 -padx 4 -pady 4 -sticky nw
+	set setent_5 [hwtk::entry $entitylf1_fr6.setent_5 \
+	    -state normal \
+		-textvariable ::ReviewTools::setname_outer_frontier_nodes \
+		-width 40 \
+		-help " Name to create a set with the Include frontier outer nodes. "]
+		
+	set setbttn_5 [hwtk::button $entitylf1_fr6.setbttn_5 -text "Create set" \
+	    -width 10 \
+		-help " Create a set with the Include frontier outer nodes. " \
+		-command "::ReviewTools::createNodeSet outer_frontier_nodes"]
+		
+	set markbttn_5 [hwtk::button $entitylf1_fr6.markbttn_5 -text "Save mark" \
+	    -width 10 \
+		-help " Save a mark with the Include frontier outer nodes. " \
+		-command "::ReviewTools::saveNodeMark outer_frontier_nodes"]
+	
+	grid $cbtn_5 $rbtn_5 $de_5 $setent_5 $setbttn_5 $markbttn_5 -padx 4 -pady 4 -sticky nw
 	#SetCursorHelp $cbtn_5lbl " Include frontier outer nodes color. "
 	SetCursorHelp $cbtn_5 " Include frontier outer nodes color. "
 	
@@ -565,6 +651,12 @@ proc ::ReviewTools::update_range { widget } {
 # Procedimiento para la selecion de nodos	
 proc ::ReviewTools::incSelector { args } {
     variable include
+	
+	variable setname_include_nodes
+	variable setname_inner_nodes
+	variable setname_frontier_nodes
+	variable setname_inner_frontier_nodes
+	variable setname_outer_frontier_nodes
 	 
     set var [lindex $args 0]
 	
@@ -600,6 +692,15 @@ proc ::ReviewTools::incSelector { args } {
                return 1;         
           }
     }
+	
+	set setname_include_nodes ""
+	set setname_inner_nodes ""
+	set setname_frontier_nodes ""
+	set setname_inner_frontier_nodes ""
+	set setname_outer_frontier_nodes ""
+	
+	return
+	
 }
 
 
@@ -721,7 +822,7 @@ proc ::ReviewTools::processBttn {} {
             return			
 		}
 		2 {
-            puts "tab index: $ntbk_indx"
+            #puts "tab index: $ntbk_indx"
 			
 			return
 		}
@@ -776,6 +877,16 @@ proc ::ReviewTools::clearVar {} {
 	variable update_low_bound 1
 	variable update_high_bound 1
 	variable clr 4
+	variable include_nodes {}
+	variable inner_nodes {}
+	variable frontier_nodes {}
+	variable inner_frontier_nodes {}
+	variable outer_frontier_nodes {}
+	variable setname_include_nodes ""
+	variable setname_inner_nodes ""
+	variable setname_frontier_nodes ""
+	variable setname_inner_frontier_nodes ""
+	variable setname_outer_frontier_nodes ""
 
 }
 	
@@ -878,15 +989,11 @@ proc ::ReviewTools::IncludeNodes { include } {
 	variable len_frontier_nodes
 	variable len_inner_frontier_nodes
 	variable len_outer_frontier_nodes
-
-	puts $include
-	
 	
 	# Se guarda la lista de todos los nodos del include
 	*createmark nodes 1 "by include shortname" $include
 	set include_nodes [ hm_getmark nodes 1]
 	*clearmark nodes 1
-	puts "include_nodes: [llength $include_nodes]"
 	
 	# Se guarda la lista de todos los nodos del modelo
 	*createmark nodes 2 "all"
@@ -908,8 +1015,6 @@ proc ::ReviewTools::IncludeNodes { include } {
 	eval *createmark nodes 1 "by comp" $comp_list
 	set comp_nodes_list [ hm_getmark nodes 1 ]
 	*clearmark comp 1
-	puts "comp_list: $comp_list"
-	puts "comp_nodes_list: [llength  $comp_nodes_list]"
 	
 	# Se guarda la lista de los nodos de los componentes fuera del include
 	*createmark comp 1 "all"
@@ -919,12 +1024,6 @@ proc ::ReviewTools::IncludeNodes { include } {
 	eval *createmark nodes 1 "by comp" $comp_out_list
 	set comp_out_nodes_list [ hm_getmark nodes 1 ]
 	*clearmark comp 1
-	puts "comp_out_list: $comp_out_list"
-	puts "comp_out_nodes_list: [llength  $comp_out_nodes_list]"
-	
-	
-	
-	
 	
 	# Se guarda la lista de los nodos inner
 	# Son los nodos de los componentes del include que se encuentran dentro del include
@@ -934,8 +1033,6 @@ proc ::ReviewTools::IncludeNodes { include } {
 	set inner_nodes [ hm_getmark nodes 1 ]	
 	*clearmark nodes 1
 	*clearmark nodes 2
-	puts "inner_nodes: $inner_nodes"
-	puts "inner_nodes: [llength  $inner_nodes]"
 	
 	# Se guarda la lista de los nodos outer
 	# Son los nodos de los componentes del include que se encuentran dentro del include
@@ -945,8 +1042,6 @@ proc ::ReviewTools::IncludeNodes { include } {
 	set outer_nodes [ hm_getmark nodes 1 ]	
 	*clearmark nodes 1
 	*clearmark nodes 2
-	puts "outer_nodes: $outer_nodes"
-	puts "outer_nodes: [llength  $outer_nodes]"
 	
 	# Se guarda la lista de nodos frontera interna
 	# Son los nodos de los componentes fuera del include que se encuentran en el include
@@ -956,8 +1051,6 @@ proc ::ReviewTools::IncludeNodes { include } {
 	set inner_frontier_nodes [ hm_getmark nodes 1 ]
 	*clearmark nodes 1
 	*clearmark nodes 2
-	puts "inner_frontier_nodes: $inner_frontier_nodes"
-	puts "inner_frontier_nodes: [llength  $inner_frontier_nodes]"
 	
 	# Se guarda la lista de nodos frontera externa
 	# Son los nodos de los componetes del include que se encuentran fuera del include
@@ -967,33 +1060,23 @@ proc ::ReviewTools::IncludeNodes { include } {
 	set outer_frontier_nodes [ hm_getmark nodes 1 ]
 	*clearmark nodes 1
 	*clearmark nodes 2
-	puts "outer_frontier_nodes: $outer_frontier_nodes"
-	puts "outer_frontier_nodes: [llength  $outer_frontier_nodes]"
 	
 	# Se guarda la lista de los nodos frontera
 	# Son los nodos frontera inner y outer
-
     if { ([llength $inner_frontier_nodes] > 0) && ([llength $outer_frontier_nodes] > 0) } {
-	    puts "AAA1"
 		set combined_lists [concat $inner_frontier_nodes $outer_frontier_nodes]
 	    eval *createmark nodes 1 $combined_lists
 	} elseif { ([llength $inner_frontier_nodes] > 0) } {
-	    puts "AAA2"
 	    eval *createmark nodes 1 $inner_frontier_nodes
 	} elseif { ([llength $outer_frontier_nodes] > 0) } {
-	    puts "AAA3"
 	    eval *createmark nodes 1 $outer_frontier_nodes
 	} else {
-	    puts "AAA4"
 	    eval *createmark nodes 1 $inner_frontier_nodes
 	}
 
 	set frontier_nodes [ hm_getmark nodes 1 ]
 	*clearmark nodes 1
 	*clearmark nodes 2
-	puts "frontier_nodes: $frontier_nodes"
-	puts "frontier_nodes: [llength  $frontier_nodes]"
-	
 	
 	set len_include_nodes [llength $include_nodes]
 	set len_inner_nodes [llength $inner_nodes]
@@ -1003,18 +1086,11 @@ proc ::ReviewTools::IncludeNodes { include } {
 	
 	return
 }
-	
+
 	
 # ##############################################################################
 # Procedimiento para review de nodos de include
 proc ::ReviewTools::IncludeReview { opt clr_1 clr_2 clr_3 clr_4 clr_5 } {
-
-	puts $opt
-	puts $clr_1
-	puts $clr_2
-	puts $clr_3
-    puts $clr_4
-    puts $clr_5
 	
 	variable include_nodes
 	variable inner_nodes
@@ -1057,6 +1133,48 @@ proc ::ReviewTools::IncludeReview { opt clr_1 clr_2 clr_3 clr_4 clr_5 } {
 			
     return
 	
+}
+
+
+# ##############################################################################
+# Procedimiento para crear un set
+proc ::ReviewTools::createNodeSet { name } {
+	
+	set list ::ReviewTools::${name}
+	set list [set $list]
+
+	set entryname ::ReviewTools::setname_${name}
+	set entryname [set $entryname]
+	
+	if { [llength $entryname] == 0 } {
+	    set setname $name
+	} else {
+	    set setname $entryname
+	}
+	
+	set newsetname [::ReviewTools::GetNewName sets $setname]
+	
+	*createentity sets cardimage="SET_GRID" includeid=0 name=$newsetname
+    *setvalue sets name=$newsetname ids=$list
+	
+    return 
+	
+}
+
+
+# ##############################################################################
+# Procedimiento para guardar una marca
+proc ::ReviewTools::saveNodeMark { name } {
+
+    set list ::ReviewTools::${name}
+	set list [set $list]
+	
+	*clearmark nodes 1
+	eval *createmark nodes 1 $list
+    hm_saveusermark nodes 1
+	*clearmark nodes 1
+	
+	return
 }
 
 
