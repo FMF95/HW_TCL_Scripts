@@ -65,6 +65,10 @@ namespace eval ::ReviewTools {
     variable clr_4 49
     variable clr_5 3
 	
+	# variables f2	
+    variable preservnodes
+	variable len_preservnodes
+	
 }
 
 
@@ -124,7 +128,8 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	
 	$ntbk add [frame $ntbk.f0] -text " Entity by range "
 	$ntbk add [frame $ntbk.f1] -text " Include frontier "
-    $ntbk add [frame $ntbk.f2] -text " Default "
+    $ntbk add [frame $ntbk.f2] -text " Preserved nodes "
+	$ntbk add [frame $ntbk.f3] -text " Default "
 	
 
 	#-----------------------------------------------------------------------------------------------
@@ -247,7 +252,7 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 			-state readonly \
 			-width 30 \
 			-values $includelist \
-            -selcommand "::ReviewTools::IncludeNodes %v"]
+            -selcommand "::ReviewTools::includeNodes %v"]
 	#pack $cbinc -side left -anchor nw -padx 4 -pady 8
 	#SetCursorHelp $cbinc " Select an include from the list to review its nodes. "
 	grid $inclbl  $cbinc -padx 4 -pady 4 -sticky nw
@@ -255,7 +260,7 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	SetCursorHelp $cbinc " Select an include from the list to review its nodes. "
 	
 	#Se inicializa
-	::ReviewTools::IncludeNodes includeoption
+	::ReviewTools::includeNodes includeoption
 
 
 	#-----------------------------------------------------------------------------------------------
@@ -477,21 +482,46 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	#SetCursorHelp $cbtn_5lbl " Include frontier outer nodes color. "
 	SetCursorHelp $cbtn_5 " Include frontier outer nodes color. "
 	
-
 	#-----------------------------------------------------------------------------------------------
 	#-----------------------------------------------------------------------------------------------
-	# Notebook page Tate
+	# Notebook page Preserved nodes
 	
+	
+	#Se inicializa
+	::ReviewTools::getPreservNodes
 	
     ::hwt::AddPadding $ntbk.f2 -height $sep;
+
+	set frf2 [hwtk::frame $ntbk.f2.frf2]
+	pack $frf2 -anchor nw -side top
 	
-    pack [label $ntbk.f2.lbl -text " Still not defined. " -width 20] -side top -anchor n
+	::hwt::AddPadding $frf2 -height $sep;
 	
+    #set lblf2 [label $frf2.lblf2 -text " Select the entit type and the range to review. " -width 100 -justify left] 
+	#pack $lblf2 -side left -anchor nw
+	
+	set entitylf2 [hwtk::labelframe $frf2.entitylf2 -text " Preserve nodes review: "]
+	pack $entitylf2 -side left -anchor nw -padx 4 -pady 8
+	
+	set pnlbl_1 [label $entitylf2.pnlbl_1 -text " # of preserved nodes = " -justify lef] 
+	
+	set pnent [hwtk::entry $entitylf2.pnent \
+	    -state disabled \
+		-textvariable ::ReviewTools::len_preservnodes \
+		-width 15 \
+		-help " Number of preserved nodes in the model. "]
+	
+	grid $pnlbl_1 $pnent -padx 4 -pady 4 -sticky nw
+	SetCursorHelp $pnlbl_1 " Number of preserved nodes in the model. "
 	
 	#-----------------------------------------------------------------------------------------------
+	#-----------------------------------------------------------------------------------------------
+	# Notebook page Default
 	
 	
-    ## pack [hwtk::radiobutton $ntbk.f2.rb1 -text "Point Size i" -variable fontsize -value 1 -help "Select point size"]
+    ::hwt::AddPadding $ntbk.f3 -height $sep;
+	
+    pack [label $ntbk.f3.lbl -text " Still not defined. " -width 20] -side top -anchor n
 
     
     #-----------------------------------------------------------------------------------------------
@@ -504,7 +534,8 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	# Oculta las pestañas del notebook
 	#$ntbk hide $ntbk.f0
 	#$ntbk hide $ntbk.f1
-	$ntbk hide $ntbk.f2
+	#$ntbk hide $ntbk.f2
+	$ntbk hide $ntbk.f3
 	
 	
 			
@@ -648,7 +679,7 @@ proc ::ReviewTools::update_range { widget } {
 
 
 # ##############################################################################
-# Procedimiento para la selecion de nodos	
+# Procedimiento para la selecion de includes	
 proc ::ReviewTools::incSelector { args } {
     variable include
 	
@@ -822,6 +853,14 @@ proc ::ReviewTools::processBttn {} {
             return			
 		}
 		2 {
+            # no checks needed.
+			
+			# Se lanza el metodo para mostrar nodos preserv
+			::ReviewTools::PreservNodesReview
+			
+			return
+		}
+		3 {
             #puts "tab index: $ntbk_indx"
 			
 			return
@@ -976,7 +1015,7 @@ proc ::ReviewTools::RangeReview { type lower_bound upper_bound color} {
 
 # ##############################################################################
 # Procedimiento para review de nodos de include
-proc ::ReviewTools::IncludeNodes { include } {
+proc ::ReviewTools::includeNodes { include } {
 
 	variable include_nodes
 	variable inner_nodes
@@ -1177,6 +1216,54 @@ proc ::ReviewTools::saveNodeMark { name } {
 	return
 }
 
+
+# ##############################################################################
+# Procedimiento para recuperar los nodos preserved de un modelo
+proc ::ReviewTools::getPreservNodes { } {
+
+    variable preservnodes
+	variable len_preservnodes
+	
+    # Procedimiento para obtener nodos preserv
+    *clearmarkall nodes
+    *createmark nodes 1 all
+	set allnodes [hm_getmark nodes 1]
+	*clearmarkall nodes
+	eval *createlist nodes 1 $allnodes
+	set preserveflag [hm_getvalue nodes list=1 dataname=preserveflag]
+	
+	set posiciones [lsearch -all $preserveflag true]
+	
+	set preservnodes []
+    foreach pos $posiciones {
+        lappend preservnodes [lindex $allnodes $pos]
+    }
+	
+    set len_preservnodes [llength $preservnodes]
+	
+	puts $preservnodes
+
+    return 
+}
+
+
+# ##############################################################################
+# Procedimiento para visualizar los nodos preserved
+proc ::ReviewTools::PreservNodesReview { } {
+
+    ::ReviewTools::getPreservNodes
+	
+	variable preservnodes
+	
+    eval *createmark nodes 1 $preservnodes
+    *createmark nodes 2 0-0
+    eval *reviewtwomark 1 2 3 1
+	*clearmark nodes 1
+	*clearmark nodes 2
+	
+	return
+
+}
 
 # ##############################################################################
 # ##############################################################################
