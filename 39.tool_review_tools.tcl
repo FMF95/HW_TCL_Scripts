@@ -1364,8 +1364,11 @@ proc ::ReviewTools::PreservNodesReview { } {
 # ##############################################################################
 # Procedimiento para visualizar los nodos preserved
 proc ::ReviewTools::clearAllPreservNodes { } {
+
     eval *clearallpreservednodes
+	
 	::ReviewTools::getPreservNodes
+	::ReviewTools::clearreview
     return
 }
 
@@ -1384,7 +1387,7 @@ proc ::ReviewTools::makeAllPreservNodesTemp { } {
 	*clearmark nodes 1
 	
 	::ReviewTools::getPreservNodes
-	
+	::ReviewTools::clearreview
     return
 }
 
@@ -1404,7 +1407,10 @@ proc ::ReviewTools::createPreservNodes { } {
 	    error "  No nodes selected.  "
 	}
 
+    set tempnodelist []
+	
 	::ReviewTools::getPreservNodes
+	::ReviewTools::clearreview
     return
 }
 
