@@ -68,6 +68,8 @@ namespace eval ::ReviewTools {
 	# variables f2	
     variable preservnodes
 	variable len_preservnodes
+	variable tempnodelist
+
 	
 }
 
@@ -495,24 +497,82 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	set frf2 [hwtk::frame $ntbk.f2.frf2]
 	pack $frf2 -anchor nw -side top
 	
-	::hwt::AddPadding $frf2 -height $sep;
+	#::hwt::AddPadding $frf2 -height $sep;
 	
     #set lblf2 [label $frf2.lblf2 -text " Select the entit type and the range to review. " -width 100 -justify left] 
 	#pack $lblf2 -side left -anchor nw
 	
-	set entitylf2 [hwtk::labelframe $frf2.entitylf2 -text " Preserve nodes review: "]
-	pack $entitylf2 -side left -anchor nw -padx 4 -pady 8
+	set entitylf2_1 [hwtk::labelframe $frf2.entitylf2_1 -text " Preserve nodes review: "]
+	pack $entitylf2_1 -side top -anchor nw -padx 4 -pady 8
 	
-	set pnlbl_1 [label $entitylf2.pnlbl_1 -text " # of preserved nodes = " -justify lef] 
+	set pnlbl_1 [label $entitylf2_1.pnlbl_1 -text " # of preserved nodes = " -justify lef] 
 	
-	set pnent [hwtk::entry $entitylf2.pnent \
+	set pnent [hwtk::entry $entitylf2_1.pnent \
 	    -state disabled \
 		-textvariable ::ReviewTools::len_preservnodes \
 		-width 15 \
 		-help " Number of preserved nodes in the model. "]
 	
-	grid $pnlbl_1 $pnent -padx 4 -pady 4 -sticky nw
+	grid $pnlbl_1 $pnent -padx 10 -pady 10 -sticky nw
 	SetCursorHelp $pnlbl_1 " Number of preserved nodes in the model. "
+	
+	
+	#-----------------------------------------------------------------------------------------------
+
+
+	::hwt::AddPadding $frf2 -height $sep;
+	
+	set entitylf2_2 [hwtk::labelframe $frf2.entitylf2_2 -text " Clear preserved nodes: "]
+	pack $entitylf2_2 -side top -anchor nw -padx 4 -pady 8
+	
+	set pnbttn_1 [hwtk::button $entitylf2_2.pnbttn_1 -text " Clear all preserv nodes " \
+	    -width 20 \
+		-help " Clear all preserv nodes in the model. " \
+		-command "::ReviewTools::clearAllPreservNodes"]
+		
+	pack $pnbttn_1 -side left -anchor nw -padx 10 -pady 10
+
+	set pnbttn_2 [hwtk::button $entitylf2_2.pnbttn_2 -text " Make all preserv temp " \
+	    -width 20 \
+		-help " Make all preserv nodes temp nodes. " \
+		-command "::ReviewTools::makeAllPreservNodesTemp"]	
+
+    pack $pnbttn_2 -side left -anchor nw -padx 10 -pady 10		
+	
+
+	#-----------------------------------------------------------------------------------------------
+
+
+	::hwt::AddPadding $frf2 -height $sep;
+	
+	set entitylf2_3 [hwtk::labelframe $frf2.entitylf2_3 -text " Create preserved nodes: "]
+	pack $entitylf2_3 -side top -anchor nw -padx 4 -pady 8
+	
+	set tmpfrm [hwtk::frame $entitylf2_3.tmpfrm]
+	pack $tmpfrm -anchor nw -side top
+	
+	set tmplbl [hwtk::label $tmpfrm.tmplbl -text "Select nodes:" -width 15]
+	pack $tmplbl -side top -anchor nw -padx 4 -pady 4
+	
+	set tmpsel [ Collector $tmpfrm.tmpsel entity 1 HmMarkCol \
+						-types "nodes" \
+						-defaulttype 0 \
+						-defaulttype 0 \
+						-withtype 1 \
+						-withReset 1 \
+						-width [hwt::DluWidth  60] \
+                        -callback "::ReviewTools::entitySelector tempnodelist"];
+	
+	variable tempcol $tmpfrm.tmpsel	
+	pack $tempcol -side top -anchor nw -padx 4 -pady 10
+	
+	set pnbttn_3 [hwtk::button $entitylf2_3.pnbttn_3 -text " Create preserv nodes " \
+	    -width 20 \
+		-help " Create preserv nodes. " \
+		-command "::ReviewTools::createPreservNodes"]											
+	
+    pack $pnbttn_3 -side top -anchor nw -padx 10 -pady 10
+
 	
 	#-----------------------------------------------------------------------------------------------
 	#-----------------------------------------------------------------------------------------------
@@ -544,6 +604,43 @@ proc ::ReviewTools::lunchGUI { {x -1} {y -1} } {
 	#-----------------------------------------------------------------------------------------------
 		
 	.reviewToolsGUI post
+}
+
+
+# ##############################################################################
+# Procedimiento para la seleccion de entidades
+proc ::ReviewTools::entitySelector { args } {
+
+	variable tempnodelist
+	
+	set listname [lindex $args 0]
+	set entitytype [lindex $args 2]
+	
+	switch [lindex $args 1] {
+		"getadvselmethods" {
+			set $listname []
+			*clearmark $entitytype 1;
+			wm withdraw .reviewToolsGUI;
+			if {![catch {*createmarkpanel $entitytype 1 "Select entities..."}]} {
+				set $listname [hm_getmark $entitytype 1];
+			if {$listname == "entitylist"} {set entityoption $entitytype};
+				*clearmark $entitytype 1;
+			}
+			if { [winfo exists .reviewToolsGUI] } {
+				wm deiconify .reviewToolsGUI
+			}
+			return;
+		}
+		"reset" {
+		   *clearmark $entitytype 1
+		   set $listname []
+		}
+		default {
+		   *clearmark $entitytype 1
+		   return 1;
+
+		}
+	}
 }
 
 
@@ -1240,8 +1337,6 @@ proc ::ReviewTools::getPreservNodes { } {
     }
 	
     set len_preservnodes [llength $preservnodes]
-	
-	puts $preservnodes
 
     return 
 }
@@ -1264,6 +1359,55 @@ proc ::ReviewTools::PreservNodesReview { } {
 	return
 
 }
+
+
+# ##############################################################################
+# Procedimiento para visualizar los nodos preserved
+proc ::ReviewTools::clearAllPreservNodes { } {
+    eval *clearallpreservednodes
+	::ReviewTools::getPreservNodes
+    return
+}
+
+
+# ##############################################################################
+# Procedimiento para visualizar los nodos preserved
+proc ::ReviewTools::makeAllPreservNodesTemp { } {
+
+    ::ReviewTools::getPreservNodes
+	
+	variable preservnodes
+	
+	*clearmark nodes 1
+    eval *createmark nodes 1 $preservnodes
+    *maketempfrompreservednodes 1
+	*clearmark nodes 1
+	
+	::ReviewTools::getPreservNodes
+	
+    return
+}
+
+
+# ##############################################################################
+# Procedimiento para visualizar los nodos preserved
+proc ::ReviewTools::createPreservNodes { } {
+
+    variable tempnodelist
+	
+	if { [llength tempnodelist] > 0 } {
+	    *clearmark nodes 1
+        eval *createmark nodes 1 $tempnodelist
+        *makepreservednodes 1
+	    *clearmark nodes 1
+	} else {
+	    error "  No nodes selected.  "
+	}
+
+	::ReviewTools::getPreservNodes
+    return
+}
+
 
 # ##############################################################################
 # ##############################################################################
