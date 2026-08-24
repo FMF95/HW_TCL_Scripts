@@ -40,3 +40,4 @@
 - 37 <ins><strong>tool_match_lists</strong></ins>: Tool that compares two lists and finds the closest elements between them.
 - 38 <ins><strong>tool_numeration_check</strong></ins>: Tool that reviews the numbering contained in all the model's includes and displays the range for a specific entity.
 - 39 <ins><strong>tool_review_tools</strong></ins>: Tool that combines several visualisation functions.
+- 40 <ins><strong>tool_input_table</strong></ins>: Tool that displays a table showing all the components of the model. It allows you to generate the input required to run an Auto Report.
