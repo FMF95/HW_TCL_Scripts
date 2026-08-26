@@ -22,6 +22,7 @@ catch { namespace delete ::InputTable }
 namespace eval ::InputTable {
 
     variable guiRecess
+	variable t
     variable complist []
     variable complistlen []
     variable compnamelist []
@@ -162,25 +163,66 @@ proc ::InputTable::lunchGUI { {x -1} {y -1} } {
     
     
     
+    set sf1 [hwtk::splitframe $guiRecess.sf1 -orient horizontal -help "Expand/Collapse" -sashcommand "::InputTable::Feedback %W %e %p" ]
+    pack  $sf1 -fill both -expand true
+    frame $sf1.f1 -background white
+	
+    set sf2 [hwtk::splitframe $sf1.sf2 -orient vertical -help "Expand/Collapse" -sashcommand "::InputTable::Feedback %W %e %p" ]
+    frame $sf2.f1 -background black
+
+    $sf1 add $sf1.f1
+    $sf1 add $sf2
+
+	
      #-----------------------------------------------------------------------------------------------
      #-----------------------------------------------------------------------------------------------    
     
     
     #Get preview frame
     #set w [hwtk::demo::getpreviewframe]
-    set t [::hwtk::table $guiRecess.t -helpcommand "::InputTable::HelpCommand %W %I %C %E" -closeeditor 1]
+	variable t
+    set t [::hwtk::table $sf1.f1.t -helpcommand "::InputTable::HelpCommand %W %I %C %E" -closeeditor 1 \
+		-cellmenucommand "::InputTable::OpenMenu %W %I %C %E"]
     pack $t -fill both -expand true -side left
 
     ::InputTable::CreateColumns $t
     ::InputTable::Populate $t 
+	
+
+     #-----------------------------------------------------------------------------------------------
+
+	 
+    set lblMatrix [hwtk::label $sf2.lblMatrix \
+        -text "Mueve la ventana de HyperMesh..." \
+        -justify left \
+        -anchor nw \
+        -padding 10]
+    pack $lblMatrix -fill both -expand 1
     
+    set ::InputTable::MonitorVista(activo) 1
+    set ::InputTable::MonitorVista(ultima_matriz) ""
+    set ::InputTable::MonitorVista(widget_label) $lblMatrix
+	
+
+     #-----------------------------------------------------------------------------------------------
+     #-----------------------------------------------------------------------------------------------
+	 
+	
+    bind $guiRecess <Destroy> {
+        set ::InputTable::MonitorVista(activo) 0
+        #puts "Monitoreo finalizado al cerrar ventana."
+    }
+	
+	::InputTable::ActualizarLabelVista
     
      #-----------------------------------------------------------------------------------------------
      #-----------------------------------------------------------------------------------------------
     
     
-    
-    
+
+
+
+
     
     
     
@@ -266,6 +308,12 @@ proc ::InputTable::closeGUI {} {
     hm_clearshape;
     *clearmarkall 1
     *clearmarkall 2
+	
+    foreach id [after info] {
+        catch {after cancel $id}
+    }
+    set ::InputTable::MonitorVista(activo) 0
+	
     catch { .inputTableGUI unpost }
     catch {namespace delete ::InputTable }
     if [winfo exist .d] { 
@@ -432,53 +480,6 @@ proc ::InputTable::SetValue {args} {
 
 
 # ##############################################################################
-# Procedimiento para el desplegable de la columna "Material" de la tabla
-proc ::InputTable::GetMaterials {args} {
-    return "mat1 mat2 mat3 mat4 mat5 mat6 mat7 mat8 mat9 mat10 mat11 mat12"
-}
-
-
-# ##############################################################################
-# Procedimiento para el desplegable de la columna "Property" de la tabla
-proc ::InputTable::GetProperties {args} {
-    return "prop1 prop2 prop3 prop4 prop5 prop6 prop7 prop8 prop9 prop10 prop11 prop12"
-}
-
-
-# ##############################################################################
-# Procedimiento para rellenar la tabla con valores por defecto
-proc ::InputTable::SetToDefaultValues {w C} {
-    foreach id [$w rowlist] {
-        $w cellset $id,$C 0
-    }
-}
-
-
-# ##############################################################################
-# Procedimiento para construir la tabla
-proc ::InputTable::CreateColumns_old {t} {
-
-    # Creacion columnas
-    $t columncreate visibility -text "Visibility" -type boolcheck -valueaccept "::InputTable::SetValue %W %I %C %V %P" \
-        -expand 0
-    $t columncreate name -text "Name" -validatecommand ::InputTable::ValidateValue \
-        -valueaccept "::InputTable::SetValue %W %I %C %V %P"
-    $t columncreate id -text "ID" -type int -editable 0
-    $t columncreate color -image palette-16.png -type intcolor -valueaccept "::InputTable::SetValue %V %P" -expand 0
-    $t columncreate thickness -text "Thickness" -type histogram -histogramrange {0 500} -validatecommand ::InputTable::ValidateValue \
-        -valueaccept "::InputTable::SetValue %W %I %C %V %P"
-    $t columncreate mats -text "Material" -type combobox -valuelistcommand "::InputTable::GetMaterials" \
-        -valueaccept "::InputTable::SetValue %W %I %C %V %P" -editable 0
-    $t columncreate props -text "Property" -type combobox -valuelistcommand "::InputTable::GetProperties" \
-        -valueaccept "::InputTable::SetValue %W %I %C %V %P"
-    $t columncreate fopen -text "File" -type fileopen -validatecommand ::InputTable::ValidateValue \
-        -valueaccept "::InputTable::SetValue %W %I %C %V %P"
-    
-
-}
-
-
-# ##############################################################################
 # Procedimiento para construir la tabla
 proc ::InputTable::CreateColumns {t} {
 
@@ -489,22 +490,6 @@ proc ::InputTable::CreateColumns {t} {
         -valueaccept "::InputTable::SetValue %W %I %C %V %P" -editable 0 -justify center -itemjustify left
     $t columncreate id -text "Component ID" -type int -editable 0 -justify center -itemjustify center
 
-}
-
-
-# ##############################################################################
-# Procedimiento para rellenar la tabla
-proc ::InputTable::Populate_old {t} {
-    puts [time {
-        set colorlist { #ff0000 #4f3e8f #ffe500 #008000 #a2353d }
-        for {set j 1} {$j < 500} {incr j} {
-            set color [expr {int(rand()*64)}]
-            set clr [lindex $colorlist [expr {$j%5}]]
-            set values [list name comp$j id $j visibility [expr {int(rand()*2)}] color $color mats mat$j \
-                thickness [list $j.6 $clr] props prop$j fopen [pwd]]
-            $t rowinsert end row$j -values $values
-        }
-    }]
 }
 
 
@@ -521,7 +506,7 @@ proc ::InputTable::Populate {t} {
             set j [expr {$i + 1}]
 			
 			# Se listan los encbezados de las columnas y sus valores
-            set values [list addreport 1 name [lindex $compnamelist $i] id [lindex $complist $i]] 
+            set values [list addreport true name [lindex $compnamelist $i] id [lindex $complist $i]] 
 			$t rowinsert end row$i -values $values
 			
         }
@@ -538,10 +523,89 @@ proc ::InputTable::HelpCommand {W I C E} {
 }
 
 
+# ##############################################################################
+# Procedimiento para configurar el menu del boton derecho
+proc ::InputTable::ConfigMenu {W} {
+    foreach item [$W items] {
+        switch -- $item {
+            radioss {
+                $W itemconfigure radioss -state disabled
+            }
+        }
+    }
+}
 
 
+# ##############################################################################
+# Procedimiento para mostrar mostrar el menu con click derecho
+proc ::InputTable::OpenMenu {W I C E} {
+    variable t
+
+	set cellvalue [$t cellget $I,$C]
+	set compid [$t cellget $I,id]
+
+    set m $W.m
+    catch {destroy $m}
+    if {![winfo exists $m]} {
+        hwtk::menu $m -configcommand "::InputTable::ConfigMenu %W"
+        $m item isolaate -caption "Isolate Component" -command "::InputTable::IsolateComponent $m $compid" -image entityComponents-16.png
+        $m item separator
+        $m item exit -caption "Exit" -command "" -image closeReverse-16.png
+    }
+    tk_popup $m [winfo pointerx .] [winfo pointery .]
+}
 
 
+# ##############################################################################
+# Procedimiento para aislar componentes
+proc ::InputTable::IsolateComponent { menu compid } { 
+	*createmark comps 1 "by id" $compid
+	*isolateonlyentitybymark 1 "geometry_off elements_on" 2
+	*clearmark comps 1
+    hm_viewfit
+}
+
+
+# ##############################################################################
+# Procedimiento de monitoreo optimizado
+proc ::InputTable::ActualizarLabelVista {} {
+    # Si la ventana se cierra o el monitoreo se apaga, detenemos el bucle
+    if {!$::InputTable::MonitorVista(activo) || ![winfo exists $::InputTable::MonitorVista(widget_label)]} { 
+        return 
+    }
+
+    # Capturar matriz actual de HyperMesh
+    set matriz_actual [hm_winfo viewmatrix]
+
+    # Verificar si hubo movimiento en la cámara
+    if {$matriz_actual ne $::InputTable::MonitorVista(ultima_matriz)} {
+        set ::InputTable::MonitorVista(ultima_matriz) $matriz_actual
+        
+        # Formatear la matriz en 4 filas de 4 columnas para que sea legible en la GUI
+        set fila1 [lrange $matriz_actual 0 3]
+        set fila2 [lrange $matriz_actual 4 7]
+        set fila3 [lrange $matriz_actual 8 11]
+        set fila4 [lrange $matriz_actual 12 15]
+        
+        set texto_formateado "Matriz de Vista Actual:\n"
+        append texto_formateado [format "\[ %6.2f  %6.2f  %6.2f  %6.2f \]\n" {*}$fila1]
+        append texto_formateado [format "\[ %6.2f  %6.2f  %6.2f  %6.2f \]\n" {*}$fila2]
+        append texto_formateado [format "\[ %6.2f  %6.2f  %6.2f  %6.2f \]\n" {*}$fila3]
+        append texto_formateado [format "\[ %6.2f  %6.2f  %6.2f  %6.2f \]" {*}$fila4]
+
+        # Actualizar el texto de la etiqueta HWTK de manera segura
+        $::InputTable::MonitorVista(widget_label) configure -text $texto_formateado
+    }
+
+    # Re-programar la ejecución cada 50 milisegundos (alta fluidez)
+    after 50 ::InputTable::ActualizarLabelVista
+}
+
+
+# ##############################################################################
+proc ::InputTable::Feedback {args} {
+    puts [info level 0]
+}
 
 
 
