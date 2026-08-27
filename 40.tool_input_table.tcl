@@ -163,15 +163,15 @@ proc ::InputTable::lunchGUI { {x -1} {y -1} } {
     
     
     
-    set sf1 [hwtk::splitframe $guiRecess.sf1 -orient horizontal -help "Expand/Collapse" -sashcommand "::InputTable::Feedback %W %e %p" ]
-    pack  $sf1 -fill both -expand true
-    frame $sf1.f1 -background white
-	
-    set sf2 [hwtk::splitframe $sf1.sf2 -orient vertical -help "Expand/Collapse" -sashcommand "::InputTable::Feedback %W %e %p" ]
-    frame $sf2.f1 -background black
+    set sf1 [hwtk::splitframe $guiRecess.sf1 -orient horizontal -help "Expand/Collapse" -refreshondrag 1 -sashcommand "::InputTable::Feedback %W %e %p" ]
+    pack $sf1 -fill both -expand true -padx 5 -pady 5
+	frame $sf1.f1
+	frame $sf1.f2
 
-    $sf1 add $sf1.f1
-    $sf1 add $sf2
+	$sf1 add $sf1.f1
+	$sf1 add $sf1.f2
+	
+    $sf1 hidepane $sf1.f2
 
 	
      #-----------------------------------------------------------------------------------------------
@@ -192,7 +192,7 @@ proc ::InputTable::lunchGUI { {x -1} {y -1} } {
      #-----------------------------------------------------------------------------------------------
 
 	 
-    set lblMatrix [hwtk::label $sf2.lblMatrix \
+    set lblMatrix [hwtk::label $sf1.f2.lblMatrix \
         -text "Mueve la ventana de HyperMesh..." \
         -justify left \
         -anchor nw \
@@ -489,6 +489,10 @@ proc ::InputTable::CreateColumns {t} {
     $t columncreate name -text "Component Name" -validatecommand ::InputTable::ValidateValue \
         -valueaccept "::InputTable::SetValue %W %I %C %V %P" -editable 0 -justify center -itemjustify left
     $t columncreate id -text "Component ID" -type int -editable 0 -justify center -itemjustify center
+	$t columncreate separator_1 -text " " -type int -editable 0 -justify center -itemjustify center -width 15 -expand 0
+	$t columncreate view -text "View Matrix" -type int -editable 0 -justify center -itemjustify center
+	$t columncreate save_view -text "Save view" -type int -editable 0 -justify center -itemjustify center
+	$t columncreate review_view -text "Review view" -type int -editable 0 -justify center -itemjustify center
 
 }
 
@@ -506,7 +510,7 @@ proc ::InputTable::Populate {t} {
             set j [expr {$i + 1}]
 			
 			# Se listan los encbezados de las columnas y sus valores
-            set values [list addreport true name [lindex $compnamelist $i] id [lindex $complist $i]] 
+            set values [list addreport true name [lindex $compnamelist $i] id [lindex $complist $i] separator_1 " " view "iso"] 
 			$t rowinsert end row$i -values $values
 			
         }
@@ -560,7 +564,8 @@ proc ::InputTable::OpenMenu {W I C E} {
 # Procedimiento para aislar componentes
 proc ::InputTable::IsolateComponent { menu compid } { 
 	*createmark comps 1 "by id" $compid
-	*isolateonlyentitybymark 1 "geometry_off elements_on" 2
+	*createstringarray 2 geometry_off
+	*isolateonlyentitybymark 1 2
 	*clearmark comps 1
     hm_viewfit
 }
