@@ -62,8 +62,8 @@ proc ::InputTable::lunchGUI { {x -1} {y -1} } {
     hwtk::dialog .inputTableGUI \
                 -propagate 1 \
                 -buttonboxpos se \
-                -minwidth 800 \
-                -minheight 500 \
+                -minwidth 600 \
+                -minheight 400 \
                 -x $x -y $y \
                 -title "Auto Report Input Table" 
 
@@ -86,79 +86,6 @@ proc ::InputTable::lunchGUI { {x -1} {y -1} } {
     
     
      #-----------------------------------------------------------------------------------------------
-    #set compfrm [hwtk::frame $guiRecess.compfrm]
-    #pack $compfrm -anchor nw -side top
-    
-    #set complbl [hwtk::label $compfrm.complbl -text "Select components:" -width 20]
-    #pack $complbl -side left -anchor nw -padx 4 -pady 10
-    
-    #set compsel [ Collector $compfrm.compsel entity 1 HmMarkCol \
-    #                    -types "comps" \
-    #                    -withtype 0 \
-    #                    -withReset 1 \
-    #                    -width [hwt::DluWidth  75] \
-    #                    -callback "::InputTable::componentsSelector"];
-                    
-                
-    #variable compcol $compfrm.compsel    
-    #$compfrm.compsel invoke
-    #pack $compcol -side top -anchor nw -padx 4 -pady 10
-    #SetCursorHelp $complbl " Choose the components to renumber their entites by their IDs. "
-    
-    
-    #-----------------------------------------------------------------------------------------------
-    #set incfrm [hwtk::frame $guiRecess.incfrm]
-    #pack $incfrm -anchor nw -side top
-    
-    #set inclbl [label $incfrm.inclbl -text "Increment: " ];   
-    #pack $inclbl -side left -anchor nw -padx 4 -pady 8
-    
-    #set incent [ hwt::AddEntry $incfrm.incent \
-    #    -labelWidth  0 \
-    #    -validate integer \
-    #    -entryWidth 16 \
-    #    -justify right \
-    #    -textvariable [namespace current]::increment];
-
-    #variable inccol $incfrm.incent    
-    ##$incfrm.incent invoke
-    #pack $inccol -side top -anchor nw -padx 150 -pady 8
-    ##SetCursorHelp $inclbl " Numbering increment. "
-    #SetCursorHelp $incent " Numbering increment. "
-    
-
-     ##-----------------------------------------------------------------------------------------------    
-    #set entfrm [hwtk::frame $guiRecess.entfrm]
-    #pack $entfrm -anchor nw -side top
-    #
-    #set entlbl [hwtk::label $entfrm.entlbl -text "Select entites:" -width 20]
-    #pack $entlbl -side left -anchor nw -padx 4 -pady 10
-    #
-    #set listsel [hwtk::selectlist $guiRecess.listsel -stripes 1 -selectmode multiple -selectcommand "::InputTable::OnSelect %W %S %c"]
-    #pack $listsel -fill both -expand true
-    #$listsel columnadd entities -text Entity
-    #
-    ##variable entcol $entfrm.listsel    
-    ##$entfrm.listsel invoke
-    ##pack $entcol -side top -anchor nw -padx 4 -pady 10
-    #SetCursorHelp $entlbl " Mark entity types to reenumber. "
-    #
-    #variable entityoptions
-    #
-    #foreach entity $entityoptions {
-    #    $listsel rowadd $entity -values [list entities  $entity]
-    #}
-    
-    
-     #-----------------------------------------------------------------------------------------------
-    #set outfrm [hwtk::labelframe  $guiRecess.outfrm -text " Output " -padding 4]
-    #pack $outfrm -fill x -pady 4;
-    
-    #set text [hwtk::text $outfrm.text -height 10 ]
-    #pack $text -side left -anchor nw -padx 4 -pady 10
-    
-    #::ProgressBar::CreateDeterminatePB $guiRecess "pb"    
-    
      #-----------------------------------------------------------------------------------------------
     
     
@@ -196,8 +123,9 @@ proc ::InputTable::lunchGUI { {x -1} {y -1} } {
         -text "Mueve la ventana de HyperMesh..." \
         -justify left \
         -anchor nw \
+		-width 50 \
         -padding 10]
-    pack $lblMatrix -fill both -expand 1
+    pack $lblMatrix -fill both -expand 0 -side left
     
     set ::InputTable::MonitorVista(activo) 1
     set ::InputTable::MonitorVista(ultima_matriz) ""
@@ -244,22 +172,6 @@ proc ::InputTable::lunchGUI { {x -1} {y -1} } {
     .inputTableGUI post
 }
 
-    
-### ##############################################################################    
-### Procedimiento para redirigir puts
-##proc ::InputTable::redirect_puts {args} {
-##    variable guiRecess
-##    
-##    set txt [join $args " "]
-##    $guiRecess.outfrm.text configure -state normal
-##    $guiRecess.outfrm.text insert end "$txt\n"
-##    $guiRecess.outfrm.text configure -state disabled
-##    $guiRecess.outfrm.text see end
-##}
-### ##############################################################################
-### Reemplazamos puts por redirect_puts en el espacio de nombres global
-##proc ::InputTable::puts args {::InputTable::redirect_puts {*}$args}    
-
 
 # ##############################################################################
 # Procedimiento para recuperar los inputs
@@ -268,6 +180,9 @@ proc ::InputTable::processBttn {} {
     variable entityoptions
     variable entitylist
     variable increment
+	
+	print " retun "
+	return
     
     # Se realizan comprobaciones para que la herramienta sea robusta
     if {[llength $complist] == 0} {
@@ -325,7 +240,9 @@ proc ::InputTable::closeGUI {} {
 # Procedimiento de borrado de variables
 proc ::InputTable::clearVars { } {
     variable complist []
-    #variable entitylist []
+    variable complistlen []
+    variable compnamelist []
+
 }
     
 
@@ -396,60 +313,7 @@ proc ::InputTable::completemsg {message} {
 }
 
 
-# ##############################################################################
-# ##############################################################################
-if {[namespace exists ::ProgressBar]} {
-    if {[winfo exists .progressBarGUI]} {
-        #tk_messageBox -icon warning -title "HyperMesh" -message "Progress Bar GUI already exists! Please close the existing GUI to open a new one."
-        ::ProgressBar::closeGUI
-        #return;
-    }
-}
 
-catch { namespace delete ::ProgressBar }
-
-# Creacion de namespace de la aplicacion
-namespace eval ::ProgressBar {
-    
-}
-
-# Procedimiento para crear una barra de progreso determinada
-proc ::ProgressBar::CreateDeterminatePB { gui bar } {
-    set pbd [hwtk::progressbar $gui.$bar -mode determinate]
-    ::ProgressBar::PackPB $pbd
-}
-
-
-# ##############################################################################
-# Procedimiento para empezar o parar la barra de progreso
-proc ::ProgressBar::BarCommand {op args} {
-    foreach w $args {
-        $w $op
-    }
-}
-
-
-# ##############################################################################
-# Procedimiento para aplicar un incremento de a la barra de progreso (determinada)
-proc ::ProgressBar::Increment { pb length } {
-    $pb configure -value [expr { [$pb cget -value] + [expr {1.0 / $length} ]*100 } ]
-}
-
-
-# ##############################################################################
-# Procedimiento para mostrar la barra de progreso
-proc ::ProgressBar::PackPB { arg } {
-    ::hwt::AddPadding $arg -height 1
-    pack $arg -side bottom -fill x
-    ::hwt::AddPadding $arg -height 1
-}
-
-
-# ##############################################################################
-# Procedimiento para ocultar la barra de progreso
-proc ::ProgressBar::ForgetPB { arg } {
-    pack forget $arg
-}
 
 
 
@@ -488,11 +352,12 @@ proc ::InputTable::CreateColumns {t} {
         -expand 0 -justify center -itemjustify center
     $t columncreate name -text "Component Name" -validatecommand ::InputTable::ValidateValue \
         -valueaccept "::InputTable::SetValue %W %I %C %V %P" -editable 0 -justify center -itemjustify left
-    $t columncreate id -text "Component ID" -type int -editable 0 -justify center -itemjustify center
-	$t columncreate separator_1 -text " " -type int -editable 0 -justify center -itemjustify center -width 15 -expand 0
-	$t columncreate view -text "View Matrix" -type int -editable 0 -justify center -itemjustify center
-	$t columncreate save_view -text "Save view" -type int -editable 0 -justify center -itemjustify center
-	$t columncreate review_view -text "Review view" -type int -editable 0 -justify center -itemjustify center
+    $t columncreate id -text "Component ID" -type int -editable 0 -justify center -itemjustify center 
+	$t columncreate separator_1 -text " " -type int -editable 0 -justify center -itemjustify center -width 15 -expand 0 \
+	    -valueaccept "::InputTable::SetValue %W %I %C %V %P"
+	$t columncreate view -text "View Matrix" -type int -editable 0 -justify center -itemjustify center 
+	$t columncreate save_view -text "Save view" -type int -editable 0 -justify center -itemjustify center 
+	$t columncreate review_view -text "Review view" -type int -editable 0 -justify center -itemjustify center 
 
 }
 
@@ -552,9 +417,12 @@ proc ::InputTable::OpenMenu {W I C E} {
     catch {destroy $m}
     if {![winfo exists $m]} {
         hwtk::menu $m -configcommand "::InputTable::ConfigMenu %W"
-        $m item isolaate -caption "Isolate Component" -command "::InputTable::IsolateComponent $m $compid" -image entityComponents-16.png
+        $m item isolaate -caption "Isolate Component" -command "::InputTable::IsolateComponent $m $compid" -image entityComponents-24.png
+		$m item saveview -caption "Save Component View" -command "::InputTable::SaveComponentView $m $compid $I $C" -image displayAdd-24.png
+		$m item showview -caption "Show Component View" -command "::InputTable::ShowComponentView $m $compid $I $C" -image display-24.png
+		$m item setisoview -caption "Set Component Iso View" -command "::InputTable::SetComponentIsoView $m $compid $I $C" -image viewAxisOrientationIso-24.png
         $m item separator
-        $m item exit -caption "Exit" -command "" -image closeReverse-16.png
+        $m item exit -caption "Exit Menu" -command "" -image closeReverse-16.png
     }
     tk_popup $m [winfo pointerx .] [winfo pointery .]
 }
@@ -563,11 +431,72 @@ proc ::InputTable::OpenMenu {W I C E} {
 # ##############################################################################
 # Procedimiento para aislar componentes
 proc ::InputTable::IsolateComponent { menu compid } { 
+
+	*createmark comps 1 "by id" $compid
+	*createstringarray 2 geometry_off
+	*isolateonlyentitybymark 1 2
+	*clearmark comps 1
+	
+    hm_viewfit
+}
+
+
+# ##############################################################################
+# Procedimiento para guardar la vista del componente
+proc ::InputTable::SaveComponentView { menu compid I C } { 
+	variable t
+	
 	*createmark comps 1 "by id" $compid
 	*createstringarray 2 geometry_off
 	*isolateonlyentitybymark 1 2
 	*clearmark comps 1
     hm_viewfit
+	
+	set view_matrix [hm_getcurrentview]
+	set view_matrix_ [lindex $view_matrix 0]
+	
+	$t cellset $I,$C $view_matrix_
+	
+}
+
+
+# ##############################################################################
+# Procedimiento para mostrar componentes
+proc ::InputTable::ShowComponentView { menu compid I C } { 
+	variable t
+	
+	*createmark comps 1 "by id" $compid
+	*createstringarray 2 geometry_off
+	*isolateonlyentitybymark 1 2
+	*clearmark comps 1
+	
+    set view_matrix [$t cellget $I,view]
+	
+	if { $view_matrix eq "iso" } {
+	    *viewset 0.707107 0.353553 -0.612372 0.000000, -0.707107 0.353553 -0.612372 0.000000, 0.000000 0.866025 0.500000 0.000000, 0.000000 0.000000 0.000000 1.000000
+	    hm_viewfit
+	} else {
+        eval *viewset $view_matrix
+	    hm_viewfit
+	}
+}
+
+
+# ##############################################################################
+# Procedimiento para guardar la vista del componente
+proc ::InputTable::SetComponentIsoView { menu compid I C } { 
+	variable t
+	
+	*createmark comps 1 "by id" $compid
+	*createstringarray 2 geometry_off
+	*isolateonlyentitybymark 1 2
+	*clearmark comps 1
+    
+	*viewset 0.707107 0.353553 -0.612372 0.000000, -0.707107 0.353553 -0.612372 0.000000, 0.000000 0.866025 0.500000 0.000000, 0.000000 0.000000 0.000000 1.000000
+	hm_viewfit
+	
+	$t cellset $I,$C "iso"
+	
 }
 
 
@@ -599,7 +528,7 @@ proc ::InputTable::ActualizarLabelVista {} {
         append texto_formateado [format "\[ %6.2f  %6.2f  %6.2f  %6.2f \]" {*}$fila4]
 
         # Actualizar el texto de la etiqueta HWTK de manera segura
-        $::InputTable::MonitorVista(widget_label) configure -text $texto_formateado
+        $::InputTable::MonitorVista(widget_label) configure -text $texto_formateado -width 50
     }
 
     # Re-programar la ejecución cada 50 milisegundos (alta fluidez)
@@ -636,6 +565,61 @@ proc ::InputTable::Feedback {args} {
 
 
 
+# ##############################################################################
+# ##############################################################################
+if {[namespace exists ::ProgressBar]} {
+    if {[winfo exists .progressBarGUI]} {
+        #tk_messageBox -icon warning -title "HyperMesh" -message "Progress Bar GUI already exists! Please close the existing GUI to open a new one."
+        ::ProgressBar::closeGUI
+        #return;
+    }
+}
+
+catch { namespace delete ::ProgressBar }
+
+# Creacion de namespace de la aplicacion
+namespace eval ::ProgressBar {
+    
+}
+
+
+# Procedimiento para crear una barra de progreso determinada
+proc ::ProgressBar::CreateDeterminatePB { gui bar } {
+    set pbd [hwtk::progressbar $gui.$bar -mode determinate]
+    ::ProgressBar::PackPB $pbd
+}
+
+
+# ##############################################################################
+# Procedimiento para empezar o parar la barra de progreso
+proc ::ProgressBar::BarCommand {op args} {
+    foreach w $args {
+        $w $op
+    }
+}
+
+
+# ##############################################################################
+# Procedimiento para aplicar un incremento de a la barra de progreso (determinada)
+proc ::ProgressBar::Increment { pb length } {
+    $pb configure -value [expr { [$pb cget -value] + [expr {1.0 / $length} ]*100 } ]
+}
+
+
+# ##############################################################################
+# Procedimiento para mostrar la barra de progreso
+proc ::ProgressBar::PackPB { arg } {
+    ::hwt::AddPadding $arg -height 1
+    pack $arg -side bottom -fill x
+    ::hwt::AddPadding $arg -height 1
+}
+
+
+# ##############################################################################
+# Procedimiento para ocultar la barra de progreso
+proc ::ProgressBar::ForgetPB { arg } {
+    pack forget $arg
+}
 
 
 # ##############################################################################
