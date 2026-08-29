@@ -26,6 +26,7 @@ namespace eval ::InputTable {
     variable complist []
     variable complistlen []
     variable compnamelist []
+	variable csv_content ""
 
     *createmark comps 1 "all"
     set complist [hm_getmark comps 1]
@@ -353,11 +354,10 @@ proc ::InputTable::CreateColumns {t} {
     $t columncreate name -text "Component Name" -validatecommand ::InputTable::ValidateValue \
         -valueaccept "::InputTable::SetValue %W %I %C %V %P" -editable 0 -justify center -itemjustify left
     $t columncreate id -text "Component ID" -type int -editable 0 -justify center -itemjustify center 
+	$t columncreate yield -text "Yield Allowable" -type real -editable 1 -justify center -itemjustify center
 	$t columncreate separator_1 -text " " -type int -editable 0 -justify center -itemjustify center -width 15 -expand 0 \
 	    -valueaccept "::InputTable::SetValue %W %I %C %V %P"
 	$t columncreate view -text "View Matrix" -type int -editable 0 -justify center -itemjustify center 
-	$t columncreate save_view -text "Save view" -type int -editable 0 -justify center -itemjustify center 
-	$t columncreate review_view -text "Review view" -type int -editable 0 -justify center -itemjustify center 
 
 }
 
@@ -375,7 +375,7 @@ proc ::InputTable::Populate {t} {
             set j [expr {$i + 1}]
 			
 			# Se listan los encbezados de las columnas y sus valores
-            set values [list addreport true name [lindex $compnamelist $i] id [lindex $complist $i] separator_1 " " view "iso"] 
+            set values [list addreport true name [lindex $compnamelist $i] id [lindex $complist $i] yield 100.0 separator_1 " " view "iso"] 
 			$t rowinsert end row$i -values $values
 			
         }
@@ -422,6 +422,8 @@ proc ::InputTable::OpenMenu {W I C E} {
 		$m item showview -caption "Show Component View" -command "::InputTable::ShowComponentView $m $compid $I $C" -image display-24.png
 		$m item setisoview -caption "Set Component Iso View" -command "::InputTable::SetComponentIsoView $m $compid $I $C" -image viewAxisOrientationIso-24.png
         $m item separator
+		$m item saveCSV -caption "Save table to CSV" -command "::InputTable::WriteCSVDialog $t" -image fileExportTable-24.png
+		$m item separator
         $m item exit -caption "Exit Menu" -command "" -image closeReverse-16.png
     }
     tk_popup $m [winfo pointerx .] [winfo pointery .]
@@ -541,6 +543,111 @@ proc ::InputTable::Feedback {args} {
     puts [info level 0]
 }
 
+
+# ##############################################################################
+# Procedimiento para obtener la informacion de la tabla
+proc ::InputTable::GenerateCSVData {table_widget} {
+    variable csv_content ""
+    
+    # Obtener los nombres de las columnas (cabecera)
+    set columns [$table_widget columnlist]
+    append csv_content [join $columns ","] "\n"
+
+    # Obtener el número total de filas
+    set row_count [llength [$table_widget rowlist] ]
+
+    # Recorrer cada fila y extraer los datos
+    for {set i 1} {$i <= $row_count} {incr i} {
+        set row_data {}
+        foreach col $columns {
+            if { [ catch { set cell_value [$table_widget cellget $i,$col] } ] } { set cell_value "###" }
+			
+            # Formatear el valor si contiene comas, comillas o saltos de línea
+            if {[string match {*,*} $cell_value] || [string match {*\"*} $cell_value] || [string match {*\n*} $cell_value]} {
+                regsub -all {\"} $cell_value {\"\"} cell_value
+                set cell_value "\"$cell_value\""
+            }
+            lappend row_data $cell_value
+        }
+        # Añadir la fila con un salto de línea
+        append csv_content [join $row_data ","] "\n"
+    }
+
+    return $csv_content
+}
+
+
+
+# ##############################################################################
+# Procedimiento para escribir un CSV
+proc ::InputTable::WriteCSV {csv_data output_file} {
+    # El comando catch devuelve 0 si tiene éxito y 1 si hay un error
+    if {[catch {
+        # Intentar abrir el archivo en modo escritura con codificación UTF-8
+        set file_channel [open $output_file w]
+        fconfigure $file_channel -encoding utf-8
+        
+        # Escribir el contenido completo
+        puts -nonewline $file_channel $csv_data
+        
+        # Cerrar el canal
+        close $file_channel
+    } error_msg]} {
+        # Si falla, hwtk tiene su propio sistema de mensajes de error
+        error " The file could not be saved. \n\n Details: $error_msg \n\n Check that the file is not open in another application and that you have write permissions. "
+        return 0
+    }
+    
+    # Retorna 1 si el archivo se guardó correctamente
+    return 1
+}
+
+
+# ##############################################################################
+# Procedimiento para escribir un CSV con dialogo
+proc ::InputTable::WriteCSVDialog {table_widget} {
+
+    variable guiRecess
+
+    # Definir los tipos de archivo permitidos en el diálogo
+    set file_types "{{CSV files} {*.csv}} {{All Files} {*.*}}";
+
+    # Abrir la ventana de diálogo visual
+    set selected_file [tk_getSaveFile -parent $guiRecess -title "Save table as CSV" -filetypes $file_types -defaultextension ".csv"]
+
+    # Si el usuario presiona "Cancelar", la variable queda vacía
+    if {$selected_file eq ""} {
+        return
+    }
+	
+    # Si el fichero no tiene extensión .csv esta se agrega
+    if {$selected_file ne "" && [file extension $selected_file] ne ".csv"} {
+        append selected_file ".csv"
+    }
+
+    # 1. Generar la información en la variable (usando el proc anterior)
+    set csv_data [::InputTable::GenerateCSVData $table_widget]
+
+    # 2. Escribir la variable en el archivo con control de errores
+    set success [::InputTable::WriteCSV $csv_data $selected_file]
+
+    # Mostrar confirmación si todo salió bien
+    if {$success} {
+        tk_messageBox -title "Success" \
+            -message " The file has been successfully saved to: \n $selected_file "
+		bell
+    }
+}
+
+
+
+# ##############################################################################
+# Procedimiento para generar  escribir un CSV
+proc ::InputTable::GenerateWriteCSV {table_widget output_file} {
+    variable csv_content
+    set csv_content [::InputTable::GenerateCSVData $table_widget]
+	::InputTable::WriteCSV $csv_content $output_file	
+}
 
 
 
