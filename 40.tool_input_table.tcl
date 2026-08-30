@@ -22,11 +22,11 @@ catch { namespace delete ::InputTable }
 namespace eval ::InputTable {
 
     variable guiRecess
-	variable t
+    variable t
     variable complist []
     variable complistlen []
     variable compnamelist []
-	variable csv_content ""
+    variable csv_content ""
 
     *createmark comps 1 "all"
     set complist [hm_getmark comps 1]
@@ -93,56 +93,56 @@ proc ::InputTable::lunchGUI { {x -1} {y -1} } {
     
     set sf1 [hwtk::splitframe $guiRecess.sf1 -orient horizontal -help "Expand/Collapse" -refreshondrag 1 -sashcommand "::InputTable::Feedback %W %e %p" ]
     pack $sf1 -fill both -expand true -padx 5 -pady 5
-	frame $sf1.f1
-	frame $sf1.f2
+    frame $sf1.f1
+    frame $sf1.f2
 
-	$sf1 add $sf1.f1
-	$sf1 add $sf1.f2
-	
+    $sf1 add $sf1.f1
+    $sf1 add $sf1.f2
+    
     $sf1 hidepane $sf1.f2
 
-	
+    
      #-----------------------------------------------------------------------------------------------
      #-----------------------------------------------------------------------------------------------    
     
     
     #Get preview frame
     #set w [hwtk::demo::getpreviewframe]
-	variable t
+    variable t
     set t [::hwtk::table $sf1.f1.t -helpcommand "::InputTable::HelpCommand %W %I %C %E" -closeeditor 1 \
-		-cellmenucommand "::InputTable::OpenMenu %W %I %C %E"]
+        -cellmenucommand "::InputTable::OpenMenu %W %I %C %E"]
     pack $t -fill both -expand true -side left
 
     ::InputTable::CreateColumns $t
     ::InputTable::Populate $t 
-	
+    
 
      #-----------------------------------------------------------------------------------------------
 
-	 
+     
     set lblMatrix [hwtk::label $sf1.f2.lblMatrix \
         -text "Mueve la ventana de HyperMesh..." \
         -justify left \
         -anchor nw \
-		-width 50 \
+        -width 50 \
         -padding 10]
     pack $lblMatrix -fill both -expand 0 -side left
     
     set ::InputTable::MonitorVista(activo) 1
     set ::InputTable::MonitorVista(ultima_matriz) ""
     set ::InputTable::MonitorVista(widget_label) $lblMatrix
-	
+    
 
      #-----------------------------------------------------------------------------------------------
      #-----------------------------------------------------------------------------------------------
-	 
-	
+     
+    
     bind $guiRecess <Destroy> {
         set ::InputTable::MonitorVista(activo) 0
         #puts "Monitoreo finalizado al cerrar ventana."
     }
-	
-	::InputTable::ActualizarLabelVista
+    
+    ::InputTable::ActualizarLabelVista
     
      #-----------------------------------------------------------------------------------------------
      #-----------------------------------------------------------------------------------------------
@@ -176,44 +176,16 @@ proc ::InputTable::lunchGUI { {x -1} {y -1} } {
 
 # ##############################################################################
 # Procedimiento para recuperar los inputs
-proc ::InputTable::processBttn {} { 
-    variable complist
-    variable entityoptions
-    variable entitylist
-    variable increment
-	
-	print " retun "
-	return
-    
-    # Se realizan comprobaciones para que la herramienta sea robusta
-    if {[llength $complist] == 0} {
-        tk_messageBox -title "Renumber by component" -message "  No components were selected. \n  Please select some components to renumber their entities.  " -parent .inputTableGUI
-        return    
-    }
-    if {[llength $entitylist] == 0} {
-        tk_messageBox -title "Renumber by component" -message "  No entites were selected. \n  Please select some entitt types to renumber.  " -parent .inputTableGUI
-        return    
-    }
-    if {$increment <= 0} {
-        tk_messageBox -title "Renumber by component" -message "Increment is zero or nefative. \nPlease define a numbering increment greater than zero." -parent .inputTableGUI        
-        return
-    }
-
-    # Se lanza el proceso de borrado de las cargas
-    ::InputTable::renumber $complist $entitylist $increment
-    
-    # Se limpian las variables
-    ::InputTable::clearVars
-    
-    # Se muestra un mensaje al acabar de evaluar los elementos
-    #::InputTable::completemsg "Job done."
-    
-    # Se cierra la ventana cuando se termina de evaluar la posicion de la cabeza de las uniones
-    #::InputTable::closeGUI    
+proc ::InputTable::processBttn { } { 
+ 
+    variable t
+    ::InputTable::GenerateCSVData $t
+    .inputTableGUI unpost
     
     #-----------------------------------------------------------------------------------------------
 
 }
+    
     
 # ##############################################################################
 # procedimiento para cerrar la interfaz grafica
@@ -224,12 +196,12 @@ proc ::InputTable::closeGUI {} {
     hm_clearshape;
     *clearmarkall 1
     *clearmarkall 2
-	
+    
     foreach id [after info] {
         catch {after cancel $id}
     }
     set ::InputTable::MonitorVista(activo) 0
-	
+    
     catch { .inputTableGUI unpost }
     catch {namespace delete ::InputTable }
     if [winfo exist .d] { 
@@ -354,10 +326,10 @@ proc ::InputTable::CreateColumns {t} {
     $t columncreate name -text "Component Name" -validatecommand ::InputTable::ValidateValue \
         -valueaccept "::InputTable::SetValue %W %I %C %V %P" -editable 0 -justify center -itemjustify left
     $t columncreate id -text "Component ID" -type int -editable 0 -justify center -itemjustify center 
-	$t columncreate yield -text "Yield Allowable" -type real -editable 1 -justify center -itemjustify center
-	$t columncreate separator_1 -text " " -type int -editable 0 -justify center -itemjustify center -width 15 -expand 0 \
-	    -valueaccept "::InputTable::SetValue %W %I %C %V %P"
-	$t columncreate view -text "View Matrix" -type int -editable 0 -justify center -itemjustify center 
+    $t columncreate yield -text "Yield Allowable" -type real -editable 1 -justify center -itemjustify center
+    $t columncreate separator_1 -text " " -type int -editable 0 -justify center -itemjustify center -width 15 -expand 0 \
+        -valueaccept "::InputTable::SetValue %W %I %C %V %P"
+    $t columncreate view -text "View Matrix" -type int -editable 0 -justify center -itemjustify center 
 
 }
 
@@ -373,11 +345,11 @@ proc ::InputTable::Populate {t} {
     puts [time {
         for {set i 0} {$i < $complistlen} {incr i} {
             set j [expr {$i + 1}]
-			
-			# Se listan los encbezados de las columnas y sus valores
+            
+            # Se listan los encbezados de las columnas y sus valores
             set values [list addreport true name [lindex $compnamelist $i] id [lindex $complist $i] yield 100.0 separator_1 " " view "iso"] 
-			$t rowinsert end row$i -values $values
-			
+            $t rowinsert end row$i -values $values
+            
         }
     }]
 }
@@ -410,20 +382,20 @@ proc ::InputTable::ConfigMenu {W} {
 proc ::InputTable::OpenMenu {W I C E} {
     variable t
 
-	set cellvalue [$t cellget $I,$C]
-	set compid [$t cellget $I,id]
+    set cellvalue [$t cellget $I,$C]
+    set compid [$t cellget $I,id]
 
     set m $W.m
     catch {destroy $m}
     if {![winfo exists $m]} {
         hwtk::menu $m -configcommand "::InputTable::ConfigMenu %W"
         $m item isolaate -caption "Isolate Component" -command "::InputTable::IsolateComponent $m $compid" -image entityComponents-24.png
-		$m item saveview -caption "Save Component View" -command "::InputTable::SaveComponentView $m $compid $I $C" -image displayAdd-24.png
-		$m item showview -caption "Show Component View" -command "::InputTable::ShowComponentView $m $compid $I $C" -image display-24.png
-		$m item setisoview -caption "Set Component Iso View" -command "::InputTable::SetComponentIsoView $m $compid $I $C" -image viewAxisOrientationIso-24.png
+        $m item saveview -caption "Save Component View" -command "::InputTable::SaveComponentView $m $compid $I $C" -image displayAdd-24.png
+        $m item showview -caption "Show Component View" -command "::InputTable::ShowComponentView $m $compid $I $C" -image display-24.png
+        $m item setisoview -caption "Set Component Iso View" -command "::InputTable::SetComponentIsoView $m $compid $I $C" -image viewAxisOrientationIso-24.png
         $m item separator
-		$m item saveCSV -caption "Save table to CSV" -command "::InputTable::WriteCSVDialog $t" -image fileExportTable-24.png
-		$m item separator
+        $m item saveCSV -caption "Save table to CSV" -command "::InputTable::WriteCSVDialog $t" -image fileExportTable-24.png
+        $m item separator
         $m item exit -caption "Exit Menu" -command "" -image closeReverse-16.png
     }
     tk_popup $m [winfo pointerx .] [winfo pointery .]
@@ -434,11 +406,11 @@ proc ::InputTable::OpenMenu {W I C E} {
 # Procedimiento para aislar componentes
 proc ::InputTable::IsolateComponent { menu compid } { 
 
-	*createmark comps 1 "by id" $compid
-	*createstringarray 2 geometry_off
-	*isolateonlyentitybymark 1 2
-	*clearmark comps 1
-	
+    *createmark comps 1 "by id" $compid
+    *createstringarray 2 geometry_off
+    *isolateonlyentitybymark 1 2
+    *clearmark comps 1
+    
     hm_viewfit
 }
 
@@ -446,59 +418,59 @@ proc ::InputTable::IsolateComponent { menu compid } {
 # ##############################################################################
 # Procedimiento para guardar la vista del componente
 proc ::InputTable::SaveComponentView { menu compid I C } { 
-	variable t
-	
-	*createmark comps 1 "by id" $compid
-	*createstringarray 2 geometry_off
-	*isolateonlyentitybymark 1 2
-	*clearmark comps 1
+    variable t
+    
+    *createmark comps 1 "by id" $compid
+    *createstringarray 2 geometry_off
+    *isolateonlyentitybymark 1 2
+    *clearmark comps 1
     hm_viewfit
-	
-	set view_matrix [hm_getcurrentview]
-	set view_matrix_ [lindex $view_matrix 0]
-	
-	$t cellset $I,$C $view_matrix_
-	
+    
+    set view_matrix [hm_getcurrentview]
+    set view_matrix_ [lindex $view_matrix 0]
+    
+    $t cellset $I,$C $view_matrix_
+    
 }
 
 
 # ##############################################################################
 # Procedimiento para mostrar componentes
 proc ::InputTable::ShowComponentView { menu compid I C } { 
-	variable t
-	
-	*createmark comps 1 "by id" $compid
-	*createstringarray 2 geometry_off
-	*isolateonlyentitybymark 1 2
-	*clearmark comps 1
-	
+    variable t
+    
+    *createmark comps 1 "by id" $compid
+    *createstringarray 2 geometry_off
+    *isolateonlyentitybymark 1 2
+    *clearmark comps 1
+    
     set view_matrix [$t cellget $I,view]
-	
-	if { $view_matrix eq "iso" } {
-	    *viewset 0.707107 0.353553 -0.612372 0.000000, -0.707107 0.353553 -0.612372 0.000000, 0.000000 0.866025 0.500000 0.000000, 0.000000 0.000000 0.000000 1.000000
-	    hm_viewfit
-	} else {
+    
+    if { $view_matrix eq "iso" } {
+        *viewset 0.707107 0.353553 -0.612372 0.000000, -0.707107 0.353553 -0.612372 0.000000, 0.000000 0.866025 0.500000 0.000000, 0.000000 0.000000 0.000000 1.000000
+        hm_viewfit
+    } else {
         eval *viewset $view_matrix
-	    hm_viewfit
-	}
+        hm_viewfit
+    }
 }
 
 
 # ##############################################################################
 # Procedimiento para guardar la vista del componente
 proc ::InputTable::SetComponentIsoView { menu compid I C } { 
-	variable t
-	
-	*createmark comps 1 "by id" $compid
-	*createstringarray 2 geometry_off
-	*isolateonlyentitybymark 1 2
-	*clearmark comps 1
+    variable t
     
-	*viewset 0.707107 0.353553 -0.612372 0.000000, -0.707107 0.353553 -0.612372 0.000000, 0.000000 0.866025 0.500000 0.000000, 0.000000 0.000000 0.000000 1.000000
-	hm_viewfit
-	
-	$t cellset $I,$C "iso"
-	
+    *createmark comps 1 "by id" $compid
+    *createstringarray 2 geometry_off
+    *isolateonlyentitybymark 1 2
+    *clearmark comps 1
+    
+    *viewset 0.707107 0.353553 -0.612372 0.000000, -0.707107 0.353553 -0.612372 0.000000, 0.000000 0.866025 0.500000 0.000000, 0.000000 0.000000 0.000000 1.000000
+    hm_viewfit
+    
+    $t cellset $I,$C "iso"
+    
 }
 
 
@@ -561,7 +533,7 @@ proc ::InputTable::GenerateCSVData {table_widget} {
         set row_data {}
         foreach col $columns {
             if { [ catch { set cell_value [$table_widget cellget $i,$col] } ] } { set cell_value "###" }
-			
+            
             # Formatear el valor si contiene comas, comillas o saltos de línea
             if {[string match {*,*} $cell_value] || [string match {*\"*} $cell_value] || [string match {*\n*} $cell_value]} {
                 regsub -all {\"} $cell_value {\"\"} cell_value
@@ -619,7 +591,7 @@ proc ::InputTable::WriteCSVDialog {table_widget} {
     if {$selected_file eq ""} {
         return
     }
-	
+    
     # Si el fichero no tiene extensión .csv esta se agrega
     if {$selected_file ne "" && [file extension $selected_file] ne ".csv"} {
         append selected_file ".csv"
@@ -635,7 +607,7 @@ proc ::InputTable::WriteCSVDialog {table_widget} {
     if {$success} {
         tk_messageBox -title "Success" \
             -message " The file has been successfully saved to: \n $selected_file "
-		bell
+        bell
     }
 }
 
@@ -646,7 +618,7 @@ proc ::InputTable::WriteCSVDialog {table_widget} {
 proc ::InputTable::GenerateWriteCSV {table_widget output_file} {
     variable csv_content
     set csv_content [::InputTable::GenerateCSVData $table_widget]
-	::InputTable::WriteCSV $csv_content $output_file	
+    ::InputTable::WriteCSV $csv_content $output_file    
 }
 
 
