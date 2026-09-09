@@ -429,7 +429,7 @@ proc ::InputTable::SaveComponentView { menu compid I C } {
     set view_matrix [hm_getcurrentview]
     set view_matrix_ [lindex $view_matrix 0]
     
-    $t cellset $I,$C $view_matrix_
+    $t cellset $I,view $view_matrix_
     
 }
 
@@ -469,7 +469,7 @@ proc ::InputTable::SetComponentIsoView { menu compid I C } {
     *viewset 0.707107 0.353553 -0.612372 0.000000, -0.707107 0.353553 -0.612372 0.000000, 0.000000 0.866025 0.500000 0.000000, 0.000000 0.000000 0.000000 1.000000
     hm_viewfit
     
-    $t cellset $I,$C "iso"
+    $t cellset $I,view "iso"
     
 }
 
