@@ -85,7 +85,7 @@ proc ::LCTreeWindow::lunchGUI { {x -1} {y -1} } {
     pack $t -expand true -fill both
 
     $t element create entityimage image
-    $t element create entitycheck boolcheck -editable 1
+    $t element create entitycheck boolcheck -editable 1 -valueacceptcommand "::LCTreeWindow::SetLowerChecks %W %I %C %E"
     $t element create entityname str -editable 0
 	$t element create lc int -editable 0
     
@@ -202,6 +202,43 @@ proc ::LCTreeWindow::ValidateValue {args} {
 # Procedimento establecer un valor
 proc ::LCTreeWindow::SetValue {args} {
     return 1
+}
+
+
+# ##############################################################################
+# Procedimento 
+proc ::LCTreeWindow::SetChildrenChecks {W I C E} {
+	
+    set parent_values [$W item cget $I -values]
+    set parent_pos_check [lsearch -exact $parent_values entitycheck]
+	set parent_check_value [lindex $parent_values [expr {$parent_pos_check + 1}]]
+	
+	set hijos [$W item children $I]
+	
+	if { [llength $hijos] eq 0 } {
+	    return 1 
+	} else {
+	
+		foreach hijo $hijos {
+		
+			set values [$W item cget $hijo -values]
+            set pos_check [lsearch -exact $values entitycheck]
+			
+			switch $parent_check_value {
+			    0 { set check_value 1 }
+			    1 { set check_value 0 }
+			}
+			
+			set values_mod [lreplace $values [expr {$pos_check + 1}] [expr {$pos_check + 1}] $check_value]
+			
+			$W item create -parent $I -values $values_mod
+			$W item delete $hijo 
+			
+		}
+		
+        return 1
+		
+	}
 }
 
 
