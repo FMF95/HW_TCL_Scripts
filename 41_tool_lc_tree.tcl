@@ -85,7 +85,7 @@ proc ::LCTreeWindow::lunchGUI { {x -1} {y -1} } {
     pack $t -expand true -fill both
 
     $t element create entityimage image
-    $t element create entitycheck boolcheck -editable 1 -valueacceptcommand "::LCTreeWindow::SetLowerChecks %W %I %C %E"
+    $t element create entitycheck boolcheck -editable 1 -valueacceptcommand "::LCTreeWindow::SetChildrenChecks %W %I %C %E"
     $t element create entityname str -editable 0
 	$t element create lc int -editable 0
     
